@@ -13,7 +13,7 @@ import (
 
 // showCmd represents the show command
 func ShowCmd(
-	aerospaceMarkClient aerospacecli.AeroSpaceClient,
+	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
 	showCmd := &cobra.Command{
 		Use:   "show <pattern>",
@@ -35,7 +35,7 @@ By default, it will set the window to floating and focus it.
 			}
 
 			// Get all windows from scratchpad workspace
-			windows, err := aerospaceMarkClient.GetAllWindowsByWorkspace("scratchpad")
+			windows, err := aerospaceClient.GetAllWindowsByWorkspace("scratchpad")
 			if err != nil {
 				fmt.Println("Error: unable to get windows")
 				return
@@ -54,9 +54,9 @@ By default, it will set the window to floating and focus it.
 			}
 
 			// Set the windows to floating
-			focusedWorkspace, err := aerospaceMarkClient.GetFocusedWorkspace()
+			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
 			for _, window := range windowsToShow {
-				err = aerospaceMarkClient.MoveWindowToWorkspace(
+				err = aerospaceClient.MoveWindowToWorkspace(
 					window.WindowID,
 					focusedWorkspace.Workspace,
 				)
@@ -66,14 +66,14 @@ By default, it will set the window to floating and focus it.
 					continue
 				}
 
-				err = aerospaceMarkClient.SetFocusByWindowID(window.WindowID)
+				err = aerospaceClient.SetFocusByWindowID(window.WindowID)
 				if err != nil {
 					fmt.Printf("Error: unable to set focus to window '%+v'\n", window)
 					continue
 				}
 				fmt.Printf("Window '%+v' shown from scratchpad\n", window)
 
-				conn := aerospaceMarkClient.(*aerospacecli.AeroSpaceWM).Conn
+				conn := aerospaceClient.(*aerospacecli.AeroSpaceWM).Conn
 				conn.SendCommand(
 					"layout",
 					[]string{

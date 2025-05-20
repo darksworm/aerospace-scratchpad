@@ -14,7 +14,7 @@ import (
 
 // moveCmd represents the move command
 func MoveCmd(
-	aerospaceMarkClient aerospacecli.AeroSpaceClient,
+	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
 	moveCmd := &cobra.Command{
 		Use:   "move <pattern>",
@@ -39,7 +39,7 @@ It uses a regex to match the window name or title.
 			}
 
 			// Get all windows
-			windows, err := aerospaceMarkClient.GetAllWindows()
+			windows, err := aerospaceClient.GetAllWindows()
 			if err != nil {
 				fmt.Println("Error: unable to get windows")
 				return
@@ -51,7 +51,7 @@ It uses a regex to match the window name or title.
 				if regex.MatchString(window.AppName) || regex.MatchString(window.WindowTitle) {
 					// Move the window to the scratchpad
 					fmt.Printf("Moving window %+v to scratchpad\n", window)
-					err := aerospaceMarkClient.MoveWindowToWorkspace(window.WindowID, "scratchpad")
+					err := aerospaceClient.MoveWindowToWorkspace(window.WindowID, "scratchpad")
 					if err != nil {
 						if strings.Contains(err.Error(), "already belongs to workspace") {
 							fmt.Printf("Window '%+v' already belongs to scratchpad\n", window)

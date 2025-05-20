@@ -12,7 +12,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 func RootCmd(
-	aerospaceMarkClient aerospacecli.AeroSpaceClient,
+	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "aerospace-scratchpad",
@@ -31,8 +31,8 @@ https://i3wm.org/docs/userguide.html#_scratchpad
 	}
 
 	// Commands
-	rootCmd.AddCommand(MoveCmd(aerospaceMarkClient))
-	rootCmd.AddCommand(ShowCmd(aerospaceMarkClient))
+	rootCmd.AddCommand(MoveCmd(aerospaceClient))
+	rootCmd.AddCommand(ShowCmd(aerospaceClient))
 
 	// Flags
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -43,9 +43,9 @@ https://i3wm.org/docs/userguide.html#_scratchpad
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(
-	aerospaceMarkClient aerospacecli.AeroSpaceClient,
+	aerospaceClient aerospacecli.AeroSpaceClient,
 ) {
-	rootCmd := RootCmd(aerospaceMarkClient)
+	rootCmd := RootCmd(aerospaceClient)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
