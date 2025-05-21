@@ -52,3 +52,7 @@ func Execute(
 	}
 }
 
+// THIS IS GENERATED DON'T EDIT
+// NOTE: to update VERSION to empty string 
+// and then run scripts/validate-version.sh
+// var VERSION = "v0.0.1-20250518-16d72bb"

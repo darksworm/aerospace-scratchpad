@@ -6,7 +6,7 @@
 
 GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.1")
 VERSION=$(grep -oP '(?<=var VERSION = ")[^"]*' cmd/main.go)
-VERSION_FILE="cmd/main.go"
+VERSION_FILE="cmd/root.go"
 
 if [ -z "$VERSION" ]; then
     # IF CI is defined, exit with error

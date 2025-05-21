@@ -20,6 +20,8 @@ func ShowCmd(
 		Short: "Show a window from scratchpad",
 		Long: `Show a window from scratchpad on the current workspace.
 By default, it will set the window to floating and focus it.
+
+Similar to SwayWM it will toggle show/hide the window if called multiple times.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
