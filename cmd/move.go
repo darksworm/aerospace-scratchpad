@@ -24,14 +24,19 @@ func MoveCmd(
 This command moves a window to the scratchpad.
 It uses a regex to match the window name or title.
 `,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				fmt.Println("Error: missing pattern argument")
 				cmd.Usage()
-				return
+				return nil
 			}
 
 			windowNamePattern := args[0]
+			if windowNamePattern == "" {
+				fmt.Println("Error: empty pattern argument")
+				cmd.Usage()
+				return nil
+			}
 			// instantiate the regex
 			regex, err := regexp.Compile(windowNamePattern)
 			if err != nil {
@@ -41,8 +46,7 @@ It uses a regex to match the window name or title.
 			// Get all windows
 			windows, err := aerospaceClient.GetAllWindows()
 			if err != nil {
-				fmt.Println("Error: unable to get windows")
-				return
+				return fmt.Errorf("Error: unable to get windows")
 			}
 
 			var movedCount int
@@ -54,14 +58,10 @@ It uses a regex to match the window name or title.
 					err := aerospaceClient.MoveWindowToWorkspace(window.WindowID, "scratchpad")
 					if err != nil {
 						if strings.Contains(err.Error(), "already belongs to workspace") {
-							fmt.Printf("Window '%+v' already belongs to scratchpad\n", window)
-							movedCount++
-							continue
+							return fmt.Errorf("Window '%+v' already belongs to scratchpad\n", window)
 						}
 
-						fmt.Printf("Error: unable to move window '%+v' to scratchpad\n", window)
-						fmt.Println(err)
-						return
+						return fmt.Errorf("Error: unable to move window '%+v' to scratchpad\n", window)
 					}
 					movedCount++
 				}
@@ -70,6 +70,8 @@ It uses a regex to match the window name or title.
 			if movedCount == 0 {
 				fmt.Println("No windows matched the pattern")
 			}
+
+			return nil
 		},
 	}
 
