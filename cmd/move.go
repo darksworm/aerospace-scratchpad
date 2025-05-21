@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	_ "net/http/pprof"
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
 	"github.com/spf13/cobra"
@@ -52,7 +53,7 @@ It uses a regex to match the window name or title.
 			var movedCount int
 			for _, window := range windows {
 				// Check if the window name matches the regex
-				if regex.MatchString(window.AppName) || regex.MatchString(window.WindowTitle) {
+				if regex.MatchString(window.AppName) {
 					// Move the window to the scratchpad
 					fmt.Printf("Moving window %+v to scratchpad\n", window)
 					err := aerospaceClient.MoveWindowToWorkspace(window.WindowID, "scratchpad")
@@ -63,6 +64,17 @@ It uses a regex to match the window name or title.
 
 						return fmt.Errorf("Error: unable to move window '%+v' to scratchpad\n", window)
 					}
+
+					conn := aerospaceClient.(*aerospacecli.AeroSpaceWM).Conn
+					conn.SendCommand(
+						"layout",
+						[]string{
+							"floating",
+							"--window-id",
+							fmt.Sprintf("%d", window.WindowID),
+						},
+					)
+
 					movedCount++
 				}
 			}

@@ -5,7 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"regexp"
+
+	_ "net/http/pprof"
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
 	"github.com/spf13/cobra"
@@ -26,6 +29,8 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
 				fmt.Println("Error: missing pattern argument")
+				os.Exit(1)
+				return
 			}
 
 			windowNamePattern := args[0]
@@ -45,13 +50,14 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 
 			var windowsToShow []aerospacecli.Window
 			for _, window := range windows {
-				if regex.MatchString(window.AppName) || regex.MatchString(window.WindowTitle) {
+				if regex.MatchString(window.AppName) {
 					windowsToShow = append(windowsToShow, window)
 				}
 			}
 
 			if len(windowsToShow) == 0 {
 				fmt.Println("No windows found matching the pattern")
+				os.Exit(1)
 				return
 			}
 
@@ -74,16 +80,6 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 					continue
 				}
 				fmt.Printf("Window '%+v' shown from scratchpad\n", window)
-
-				conn := aerospaceClient.(*aerospacecli.AeroSpaceWM).Conn
-				conn.SendCommand(
-					"layout",
-					[]string{
-						"floating",
-						"--window-id",
-						fmt.Sprintf("%d", window.WindowID),
-					},
-				)
 			}
 		},
 	}
