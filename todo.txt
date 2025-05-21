@@ -1,0 +1,4 @@
+# Add a readme file to the project
+
+# Change show to toggle visibility of the scratchpad
+This way it should behave closer to how SwayWM scratchpad works.
