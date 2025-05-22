@@ -29,13 +29,19 @@ Summon a window from the scratchpad workspace to the current workspace.
 aerospace-scratchpad show <pattern>
 ```
 
+**Future implementation** As of now show doesn't toggle the scratchpad, but I'll implement this behaviour
+
 ### Config Usage
 
 ```toml
 # ~/.config/aerospace/config.toml
 [mode.main.binding] 
 # This toggle the scratchpad window show/hide
-cmd-ctrl-1 = ["exec-and-forget aerospace-scratchpad show WhatsApp || aerospace-scratchpad move WhatsApp"]
+cmd-ctrl-1 = [
+    """exec-and-forget aerospace-scratchpad show Finder || \
+                        aerospace-scratchpad move Finder
+    """
+]
 ```
 
 ## Advanced Usage
