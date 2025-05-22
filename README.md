@@ -61,6 +61,8 @@ cmd-ctrl-1 = [
                        aerospace-scratchpad move "$(aerospace-marks get sp-1 -a)
     """
 ]
+```
+
 ## Installation
 
 ### Nix
