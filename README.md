@@ -5,8 +5,8 @@ A I3/Sway like scratchpad extension for [AeroSpace WM](https://github.com/nikita
 ## Demo
 
 
+https://github.com/user-attachments/assets/108149b7-772e-4972-bc3f-7b0199b8ef6a
 
-https://github.com/user-attachments/assets/94c65729-c724-4c84-aefa-8d7b9613dbfc
 
 
 
