@@ -1,0 +1,75 @@
+# aerospace-scratchpad
+
+A I3/Sway like scratchpad extension for [AeroSpace WM](https://github.com/nikitabobko/AeroSpace)
+
+From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
+```text
+6.21. Scratchpad
+
+There are two commands to use any existing window as scratchpad window. move scratchpad will move a window to the scratchpad workspace. This will make it invisible until you show it again. There is no way to open that workspace. Instead, when using scratchpad show, the window will be shown again, as a floating window, centered on your current workspace (using scratchpad show on a visible scratchpad window will make it hidden again, so you can have a keybinding to toggle). Note that this is just a normal floating window, so if you want to "remove it from scratchpad", you can simple make it tiling again (floating toggle).
+
+As the name indicates, this is useful for having a window with your favorite editor always at hand. However, you can also use this for other permanently running applications which you don’t want to see all the time: Your music player, alsamixer, maybe even your mail client…?
+```
+
+[What Are Scratchpads and WHY Are They Good?](https://youtu.be/72ccdlOWe20?si=tyYhdW6_BRJSCSHr)
+
+## Basic Usage
+
+Move the current focused window to the scratchpad workspace.
+```text
+aerospace-scratchpad move <pattern>
+```
+Summon a window from the scratchpad workspace to the current workspace.
+```text
+aerospace-scratchpad show <pattern>
+```
+
+## Installation
+
+### Nix
+
+If you have Nix installed, you can build and install `aerospace-scratchpad` using the following command:
+
+```bash
+nix profile install github:cristianoliveira/aerospace-scratchpad
+```
+
+You can also run without installing it by using:
+
+```bash
+nix run github:cristianoliveira/aerospace-scratchpad
+```
+
+This will build the default package defined in `flake.nix`.
+
+### Go
+
+If you have Go installed, you can install `aerospace-scratchpad` directly using:
+
+```bash
+go install github.com/cristianoliveira/aerospace-scratchpad@latest
+```
+
+This will download and install the latest version of `aerospace-scratchpad` to your `$GOPATH/bin`.
+
+#### Post installation
+
+After installing, you may need to include aerospace-scratchpad in aerospace context.
+
+Check where the binary is installed, run:
+```bash
+echo $(which aerospace-scratchpad) | sed 's/\/aerospace-scratchpad//g'
+```
+
+And in your config add:
+```toml
+[exec]
+    inherit-env-vars = true
+[exec.env-vars]
+    # Replace 'aerospace-scratchpad/install/path' with the actual path from the above command
+    PATH = 'aerospace-scratchpad/install/path/bin:${PATH}'
+```
+
+## License
+
+This project is licensed under the terms of the LICENSE file.
