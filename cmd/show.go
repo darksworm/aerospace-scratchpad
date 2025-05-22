@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	_ "net/http/pprof"
 
@@ -34,6 +35,13 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 			}
 
 			windowNamePattern := args[0]
+			windowNamePattern = strings.TrimSpace(windowNamePattern)
+			if windowNamePattern == "" {
+				fmt.Println("Error: empty pattern argument")
+				os.Exit(1)
+				return
+			}
+
 			// instantiate the regex
 			regex, err := regexp.Compile(windowNamePattern)
 			if err != nil {
