@@ -2,13 +2,12 @@
 
 A I3/Sway like scratchpad extension for [AeroSpace WM](https://github.com/nikitabobko/AeroSpace)
 
+**Beta**: I use this daily, but it's still a work in progress. 
+Please report any issues or ideas in the [issues](https://github.com/cristianoliveira/aerospace-marks/issues) section.
+
 ## Demo
 
-
 https://github.com/user-attachments/assets/108149b7-772e-4972-bc3f-7b0199b8ef6a
-
-
-
 
 From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
 > 6.21. Scratchpad
