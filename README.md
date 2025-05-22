@@ -42,6 +42,25 @@ cmd-ctrl-1 = ["exec-and-forget aerospace-scratchpad show WhatsApp || aerospace-s
 
 See more in [documentation](docs/)
 
+### Dinamic scratchpads mapping
+
+By pairing with [aerospace-marks](https://github.com/cristianoliveira/aerospace-marks) you 
+can turn any window into a scratchpad window an bind a toggle key, on the fly!
+
+```toml
+# ~/.config/aerospace/config.toml
+[mode.main.binding] 
+# Mark the current window with a given identifier
+cmd-shit-ctrl-1 = [
+    "exec-and-forget aerospace-marks mark sp-1"
+]
+
+# Toggle show/hide the marked window as scratchpad
+cmd-ctrl-1 = [
+    """exec-and-forget aerospace-scratchpad show "$(aerospace-marks get sp-1 -a)" || \
+                       aerospace-scratchpad move "$(aerospace-marks get sp-1 -a)
+    """
+]
 ## Installation
 
 ### Nix
