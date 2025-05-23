@@ -1,17 +1,18 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 Cristian Oliveira licence@cristianoliveira.dev
 */
 package cmd
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
 	_ "net/http/pprof"
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
 	"github.com/spf13/cobra"
 )
 
@@ -29,64 +30,105 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
-				fmt.Println("Error: missing pattern argument")
-				os.Exit(1)
+				stderr.Println("Error: missing pattern argument")
 				return
 			}
 
 			windowNamePattern := args[0]
-			windowNamePattern = strings.TrimSpace(windowNamePattern)
 			if windowNamePattern == "" {
-				fmt.Println("Error: empty pattern argument")
-				os.Exit(1)
+				focusedWindow, err := aerospaceClient.GetFocusedWindow()
+				if err != nil {
+					stderr.Println("Error: unable to get focused window: %v", err)
+					return
+				}
+
+				windowNamePattern = fmt.Sprintf("^%s$", focusedWindow.AppName)
 				return
 			}
+
+			windowNamePattern = strings.TrimSpace(windowNamePattern)
+
+			windows, err := aerospaceClient.GetAllWindows()
+			if err != nil {
+				stderr.Println("Error: unable to get windows")
+				return
+			}
+
+			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
+			if err != nil {
+				stderr.Println("Error: unable to get focused workspace")
+				return
+			}
+
+			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
 
 			// instantiate the regex
-			regex, err := regexp.Compile(windowNamePattern)
+			windowPattern, err := regexp.Compile(windowNamePattern)
 			if err != nil {
-				fmt.Println("Error: invalid window-name-pattern")
+				stderr.Println("Error: invalid window-name-pattern")
 				return
 			}
 
-			// Get all windows from scratchpad workspace
-			windows, err := aerospaceClient.GetAllWindowsByWorkspace("scratchpad")
-			if err != nil {
-				fmt.Println("Error: unable to get windows")
-				return
-			}
-
-			var windowsToShow []aerospacecli.Window
 			for _, window := range windows {
-				if regex.MatchString(window.AppName) {
-					windowsToShow = append(windowsToShow, window)
+				if !windowPattern.MatchString(window.AppName) {
+					continue
 				}
-			}
 
-			if len(windowsToShow) == 0 {
-				fmt.Println("No windows found matching the pattern")
-				os.Exit(1)
-				return
-			}
-
-			// Set the windows to floating
-			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
-			for _, window := range windowsToShow {
-				err = aerospaceClient.MoveWindowToWorkspace(
+				isWindowInFocusedWorkspace, err := querier.IsWindowInWorkspace(
 					window.WindowID,
 					focusedWorkspace.Workspace,
 				)
-
 				if err != nil {
-					fmt.Printf("Window '%+v' already belongs to workspace '%s'\n", window, focusedWorkspace.Workspace)
-					continue
+					stderr.Printf("Error: unable to check if window '%+v' is in workspace '%s'\n", window, focusedWorkspace.Workspace)
+					return
 				}
 
-				err = aerospaceClient.SetFocusByWindowID(window.WindowID)
-				if err != nil {
-					fmt.Printf("Error: unable to set focus to window '%+v'\n", window)
-					continue
+				if isWindowInFocusedWorkspace {
+					isWindowFocused, err := querier.IsWindowFocused(window.WindowID)
+					if err != nil {
+						stderr.Printf("Error: unable to check if window '%+v' is focused\n", window)
+						return
+					}
+					if isWindowFocused {
+						if err = aerospaceClient.MoveWindowToWorkspace(
+							window.WindowID,
+							"scratchpad",
+						); err != nil {
+							stderr.Printf("Error: unable to move window '%+v' to scratchpad\n", window)
+							return
+						}
+
+						conn := aerospaceClient.(*aerospacecli.AeroSpaceWM).Conn
+						conn.SendCommand(
+							"layout",
+							[]string{
+								"floating",
+								"--window-id",
+								fmt.Sprintf("%d", window.WindowID),
+							},
+						)
+
+						return
+				  }
+
+					aerospaceClient.SetFocusByWindowID(window.WindowID)
+					fmt.Printf("Setting focus to window '%s'\n", window.AppName)
+					return
 				}
+
+				if err = aerospaceClient.MoveWindowToWorkspace(
+					window.WindowID,
+					focusedWorkspace.Workspace,
+				); err != nil {
+					stderr.Printf("Error: unable to move window '%+v' to workspace '%s'\n", window, focusedWorkspace.Workspace)
+					return
+				}
+
+				if err = aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
+					stderr.Printf("Error: unable to set focus to window '%+v'\n", window)
+					return
+				}
+
 				fmt.Printf("Window '%+v' shown from scratchpad\n", window)
 			}
 		},

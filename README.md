@@ -24,7 +24,7 @@ Move the current focused window to the scratchpad workspace.
 ```text
 aerospace-scratchpad move <pattern>
 ```
-Summon a window from the scratchpad workspace to the current workspace.
+Summon or move a window from the scratchpad workspace to the current workspace.
 ```text
 aerospace-scratchpad show <pattern>
 ```
@@ -51,7 +51,7 @@ See more in [documentation](docs/)
 ### Dinamic scratchpads mapping
 
 By pairing with [aerospace-marks](https://github.com/cristianoliveira/aerospace-marks) you 
-can turn any window into a scratchpad window an bind a toggle key, on the fly!
+can turn any window into a scratchpad window and bind a toggle key on the fly!
 
 ```toml
 # ~/.config/aerospace/config.toml
@@ -62,9 +62,11 @@ cmd-shit-ctrl-1 = [
 ]
 
 # Toggle show/hide the marked window as scratchpad
+# If current window is not a scratchpad, move to scratchpad and mark with `sp-1`
+# otherwise show/hide window marked as `sp-1`
 cmd-ctrl-1 = [
     """exec-and-forget aerospace-scratchpad show "$(aerospace-marks get sp-1 -a)" || \
-                       aerospace-scratchpad move "$(aerospace-marks get sp-1 -a)
+                       aerospace-scratchpad move "$(aerospace-marks mark sp-1 -s)"
     """
 ]
 ```
