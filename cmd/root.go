@@ -25,23 +25,15 @@ This is heavily inspired by i3wm's scratchpad feature, but follows aerospace com
 See:
 https://i3wm.org/docs/userguide.html#_scratchpad
 `,
-		// Uncomment the following line if your bare application
-		// has an action associated with it:
-		// Run: func(cmd *cobra.Command, args []string) { },
 	}
 
 	// Commands
 	rootCmd.AddCommand(MoveCmd(aerospaceClient))
 	rootCmd.AddCommand(ShowCmd(aerospaceClient))
 
-	// Flags
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	return rootCmd
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(
 	aerospaceClient aerospacecli.AeroSpaceClient,
 ) {
