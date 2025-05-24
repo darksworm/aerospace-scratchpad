@@ -4,8 +4,8 @@ Here you find a extensive documentation about the CLI.
 
 ## Command: `move`
 
-Move the current focused window to the scratchpad workspace. The scratchpad workspace is a special workspace that is not visible to the user. The window will be hidden until you show it again.
-You actually can see this in your workspace list, but it can be ignored, it just store the windows that are hidden.
+Move the current focused window to the scratchpad workspace. The window will be hidden until you show it again.
+You actually can see this in your workspace list, but it can be ignored, it just to store the windows that are "hidden".
 
 ### USAGE
 
@@ -32,3 +32,14 @@ For more details:
 ```bash
 aerospace-scratchpad show --help
 ```
+
+## Implementation details
+
+### Scratchpad workspace
+
+It will send the window to a "special" workspace that is called `.scratchpad`. This workspace is like any other workspace, but can be ignored. The window will be hidden until you show it again.
+
+### Comunication with AeroSpaceWM
+
+The communication with AeroSpaceWM is done through a ipc socket. 
+TBD (add package client)

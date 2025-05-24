@@ -12,6 +12,7 @@ import (
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
 	"github.com/spf13/cobra"
 )
@@ -91,7 +92,7 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 					if isWindowFocused {
 						if err = aerospaceClient.MoveWindowToWorkspace(
 							window.WindowID,
-							"scratchpad",
+							constants.DefaultScratchpadWorkspaceName,
 						); err != nil {
 							stderr.Printf("Error: unable to move window '%+v' to scratchpad\n", window)
 							return

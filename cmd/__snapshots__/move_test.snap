@@ -18,29 +18,62 @@ unable to get windows
 ---
 
 [TestMoveCmd/moves_a_window_to_scratchpad_by_pattern - 1]
-[]aerospacecli.Window{
-    {WindowID:1, WindowTitle:"", AppName:"MyApp"},
-    {WindowID:2, WindowTitle:"", AppName:"OtherApp"},
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 5678,
+    },
 }
-aerospace-scratchpad move MyApp
+aerospace-scratchpad move Notepad
 
 Output
-Moving window 1 | MyApp |  to scratchpad
+Moving window 1234 | Notepad |  to scratchpad
 
 Error
  <nil>
 ---
 
+
 [TestMoveCmd/fails_when_moving_a_window_to_scratchpad - 1]
-[]aerospacecli.Window{
-    {WindowID:1, WindowTitle:"", AppName:"MyApp"},
-    {WindowID:2, WindowTitle:"", AppName:"OtherApp"},
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 5678,
+    },
 }
-aerospace-scratchpad move MyApp
+aerospace-scratchpad move Finder
 
 Output
 
 Error
-Error: unable to move window '1 | MyApp | ' to scratchpad
+unable to move window '5678 | Finder | ' to scratchpad
 
+---
+
+[TestMoveCmd/moves_current_focused_window_to_scratchpad_when_empty - 1]
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 5678,
+    },
+}
+aerospace-scratchpad move 
+
+Output
+Moving window 5678 | Finder |  to scratchpad
+
+Error
+ <nil>
 ---

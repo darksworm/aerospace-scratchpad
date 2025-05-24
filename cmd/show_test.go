@@ -6,13 +6,14 @@ import (
 	"testing"
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/mocks/aerospacecli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/testutils"
 	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 )
 
-func TestFunction(t *testing.T) {
+func TestShowCmd(t *testing.T) {
 	t.Run("moves the current focused window to scratchpad when empty", func(t *testing.T) {
 		command := "show"
 		args := []string{command, ""}
@@ -72,7 +73,7 @@ func TestFunction(t *testing.T) {
 				Times(1),
 
 			aerospaceClient.EXPECT().
-				MoveWindowToWorkspace(focusedWindow.WindowID, "scratchpad").
+				MoveWindowToWorkspace(focusedWindow.WindowID, constants.DefaultScratchpadWorkspaceName).
 				Return(nil).
 				Times(1),
 
@@ -233,7 +234,9 @@ func TestFunction(t *testing.T) {
 				Times(1),
 
 			aerospaceClient.EXPECT().
-				MoveWindowToWorkspace(focusedWindow.WindowID, "scratchpad").
+				MoveWindowToWorkspace(
+					focusedWindow.WindowID,
+					constants.DefaultScratchpadWorkspaceName).
 				Return(nil).
 				Times(1),
 

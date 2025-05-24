@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/cli"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
 	"github.com/spf13/cobra"
 )
 
@@ -25,13 +25,26 @@ func MoveCmd(
 
 This command moves a window to the scratchpad.
 It uses a regex to match the window name or title.
+If no pattern is provided, moves the currently focused window.
 `,
-		Args:  cobra.MatchAll(
-			cobra.ExactArgs(1),
-			cli.ValidateAllNonEmpty,
-		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			windowNamePattern := args[0]
+			var windowNamePattern string
+			if len(args) == 0 {
+				windowNamePattern = ""
+			} else {
+				windowNamePattern = strings.TrimSpace(args[0])
+			}
+
+			if windowNamePattern == "" {
+				focusedWindow, err := aerospaceClient.GetFocusedWindow()
+				if err != nil {
+					return fmt.Errorf("unable to get focused window: %v", err)
+				}
+				if focusedWindow == nil {
+					return fmt.Errorf("no focused window found")
+				}
+				windowNamePattern = fmt.Sprintf("^%s$", focusedWindow.AppName)
+			}
 
 			// instantiate the regex
 			regex, err := regexp.Compile(windowNamePattern)
@@ -53,13 +66,16 @@ It uses a regex to match the window name or title.
 
 				// Move the window to the scratchpad
 				fmt.Printf("Moving window %+v to scratchpad\n", window)
-				err := aerospaceClient.MoveWindowToWorkspace(window.WindowID, "scratchpad")
+				err := aerospaceClient.MoveWindowToWorkspace(
+					window.WindowID,
+					constants.DefaultScratchpadWorkspaceName,
+				)
 				if err != nil {
 					if strings.Contains(err.Error(), "already belongs to workspace") {
 						return fmt.Errorf("Window '%+v' already belongs to scratchpad\n", window)
 					}
 
-					return fmt.Errorf("Error: unable to move window '%+v' to scratchpad\n", window)
+					return fmt.Errorf("unable to move window '%+v' to scratchpad\n", window)
 				}
 
 				aerospaceClient.SetLayout(

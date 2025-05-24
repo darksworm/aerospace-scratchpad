@@ -1,6 +1,10 @@
 package testutils
 
-import "github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+import (
+	"regexp"
+
+	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+)
 
 type AeroSpaceTree struct {
 	Windows []aerospacecli.Window
@@ -14,6 +18,20 @@ func ExtractAllWindows(tree []AeroSpaceTree) []aerospacecli.Window {
 		allWindows = append(allWindows, t.Windows...)
 	}
 	return allWindows
+}
+
+func ExtractWindowsByName(tree []AeroSpaceTree, name string) []aerospacecli.Window {
+	pattern := regexp.MustCompile(name)
+	var matchedWindows []aerospacecli.Window
+	for _, t := range tree {
+		for _, window := range t.Windows {
+			if pattern.MatchString(window.AppName) {
+				matchedWindows = append(matchedWindows, window)
+			}
+		}
+	}
+
+	return matchedWindows
 }
 
 func ExtractFocusedTree(tree []AeroSpaceTree) *AeroSpaceTree {
