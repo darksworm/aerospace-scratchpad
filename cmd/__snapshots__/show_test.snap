@@ -1,0 +1,87 @@
+
+[TestFunction/set_focus_to_window_if_already_in_the_focused_workspace_but_not_focused - 1]
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 1234,
+    },
+}
+aerospace-scratchpad show Finder
+
+Output
+Setting focus to window 'Finder'
+
+Error
+<nil>
+---
+
+[TestFunction/moves_the_current_focused_window_to_scratchpad_when_empty - 1]
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 5678,
+    },
+}
+aerospace-scratchpad show 
+
+Output
+Window '5678 | Finder | ' hidden to scratchpad
+
+Error
+<nil>
+---
+
+[TestFunction/moves_a_window_to_scratchpad_by_pattern - 1]
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 5678,
+    },
+}
+aerospace-scratchpad show Finder
+
+Output
+Window '5678 | Finder | ' hidden to scratchpad
+
+Error
+<nil>
+---
+
+[TestFunction/summon_the_window_to_the_current_workspace_if_in_another_workspace - 1]
+[]testutils.AeroSpaceTree{
+    {
+        Windows: {
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        FocusedWindowId: 0,
+    },
+    {
+        Windows: {
+            {WindowID:91011, WindowTitle:"", AppName:"Terminal"},
+        },
+        Workspace:       &aerospacecli.Workspace{Workspace:"ws2"},
+        FocusedWindowId: 91011,
+    },
+}
+aerospace-scratchpad show Finder
+
+Output
+Window '5678 | Finder | ' is summoned
+
+Error
+<nil>
+---

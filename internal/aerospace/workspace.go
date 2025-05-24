@@ -12,15 +12,15 @@ type AerospaceWorkspace interface {
 	// Returns true if the window is in the workspace
 	IsWindowInWorkspace(windowID int, workspaceName string) (bool, error)
 
-  // IsWindowInFocusedWorkspace checks if a window is in the focused workspace
-  //
-  // Returns true if the window is in the focused workspace
-  IsWindowInFocusedWorkspace(windowID int) (bool, error)
+	// IsWindowInFocusedWorkspace checks if a window is in the focused workspace
+	//
+	// Returns true if the window is in the focused workspace
+	IsWindowInFocusedWorkspace(windowID int) (bool, error)
 
-  // IsWindowFocused checks if a window is focused
-  //
-  // Returns true if the window is focused
-  IsWindowFocused(windowID int) (bool, error)
+	// IsWindowFocused checks if a window is focused
+	//
+	// Returns true if the window is focused
+	IsWindowFocused(windowID int) (bool, error)
 }
 
 type AeroSpaceWM struct {
@@ -45,30 +45,30 @@ func (a *AeroSpaceWM) IsWindowInWorkspace(windowID int, workspaceName string) (b
 }
 
 func (a *AeroSpaceWM) IsWindowInFocusedWorkspace(windowID int) (bool, error) {
-  // Get the focused workspace
-  focusedWorkspace, err := a.cli.GetFocusedWorkspace()
-  if err != nil {
-    return false, fmt.Errorf("Error: unable to get focused workspace: %v", err)
-  }
+	// Get the focused workspace
+	focusedWorkspace, err := a.cli.GetFocusedWorkspace()
+	if err != nil {
+		return false, fmt.Errorf("Error: unable to get focused workspace: %v", err)
+	}
 
-  // Check if the window is in the focused workspace
-  return a.IsWindowInWorkspace(windowID, focusedWorkspace.Workspace)
+	// Check if the window is in the focused workspace
+	return a.IsWindowInWorkspace(windowID, focusedWorkspace.Workspace)
 }
 
 func (a *AeroSpaceWM) IsWindowFocused(windowID int) (bool, error) {
-  // Get the focused window
-  focusedWindow, err := a.cli.GetFocusedWindow()
-  if err != nil {
-    return false, fmt.Errorf("Error: unable to get focused window: %v", err)
-  }
+	// Get the focused window
+	focusedWindow, err := a.cli.GetFocusedWindow()
+	if err != nil {
+		return false, fmt.Errorf("Error: unable to get focused window: %v", err)
+	}
 
-  // Check if the window is focused
-  return focusedWindow.WindowID == windowID, nil
+	// Check if the window is focused
+	return focusedWindow.WindowID == windowID, nil
 }
 
 // NewAerospaceQuerier creates a new AerospaceQuerier
 func NewAerospaceQuerier(cli aerospacecli.AeroSpaceClient) AerospaceWorkspace {
-  return &AeroSpaceWM{
-    cli: cli,
-  }
+	return &AeroSpaceWM{
+		cli: cli,
+	}
 }

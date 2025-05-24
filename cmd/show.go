@@ -28,6 +28,7 @@ By default, it will set the window to floating and focus it.
 
 Similar to SwayWM it will toggle show/hide the window if called multiple times.
 `,
+		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
 				stderr.Println("Error: missing pattern argument")
@@ -35,6 +36,7 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 			}
 
 			windowNamePattern := args[0]
+			windowNamePattern = strings.TrimSpace(windowNamePattern)
 			if windowNamePattern == "" {
 				focusedWindow, err := aerospaceClient.GetFocusedWindow()
 				if err != nil {
@@ -43,10 +45,7 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 				}
 
 				windowNamePattern = fmt.Sprintf("^%s$", focusedWindow.AppName)
-				return
 			}
-
-			windowNamePattern = strings.TrimSpace(windowNamePattern)
 
 			windows, err := aerospaceClient.GetAllWindows()
 			if err != nil {
@@ -98,16 +97,12 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 							return
 						}
 
-						conn := aerospaceClient.(*aerospacecli.AeroSpaceWM).Conn
-						conn.SendCommand(
-							"layout",
-							[]string{
-								"floating",
-								"--window-id",
-								fmt.Sprintf("%d", window.WindowID),
-							},
+						aerospaceClient.SetLayout(
+							window.WindowID,
+							"floating",
 						)
 
+						fmt.Printf("Window '%+v' hidden to scratchpad\n", window)
 						return
 				  }
 
@@ -129,7 +124,7 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 					return
 				}
 
-				fmt.Printf("Window '%+v' shown from scratchpad\n", window)
+				fmt.Printf("Window '%+v' is summoned\n", window)
 			}
 		},
 	}
