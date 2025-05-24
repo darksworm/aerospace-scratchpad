@@ -41,7 +41,7 @@ cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show Finder"
 
 # Or using summon instead
 cmd-ctrl-2 = [
-    """exec-and-forget aerospace-scratchpad show Finder || \
+    """exec-and-forget aerospace-scratchpad summon Finder || \
                         aerospace-scratchpad move Finder
     """
 ]
