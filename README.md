@@ -37,7 +37,10 @@ aerospace-scratchpad show <pattern>
 # ~/.config/aerospace/config.toml
 [mode.main.binding] 
 # This toggle the scratchpad window show/hide
-cmd-ctrl-1 = [
+cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show Finder"
+
+# Or using summon instead
+cmd-ctrl-2 = [
     """exec-and-forget aerospace-scratchpad show Finder || \
                         aerospace-scratchpad move Finder
     """
@@ -59,11 +62,7 @@ can turn any window into a scratchpad window and bind a toggle key on the fly!
 # Toggle show/hide the marked window as scratchpad
 # If current window is not a scratchpad, move to scratchpad and mark with `sp-1`
 # otherwise show/hide window marked as `sp-1`
-cmd-ctrl-1 = [
-    """exec-and-forget aerospace-scratchpad show "$(aerospace-marks get sp-1 -a)" || \
-                       aerospace-scratchpad move "$(aerospace-marks mark sp-1 -s)"
-    """
-]
+cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show \"$(aerospace-marks get sp-1 -a)\""
 
 # Unmark sp-1 so you can reuse the mark for another window
 cmd-shit-ctrl-1 = [
