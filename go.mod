@@ -5,13 +5,13 @@ go 1.24.2
 toolchain go1.24.3
 
 require (
-	github.com/cristianoliveira/aerospace-ipc v0.0.0-20250525153650-59d68596bf12
 	github.com/gkampitakis/go-snaps v0.5.11
 	github.com/spf13/cobra v1.9.1
 	go.uber.org/mock v0.5.2
 )
 
 require (
+	github.com/cristianoliveira/aerospace-ipc v0.0.0-20250525153650-59d68596bf12
 	github.com/gkampitakis/ciinfo v0.3.1 // indirect
 	github.com/gkampitakis/go-diff v1.3.2 // indirect
 	github.com/goccy/go-yaml v1.15.13 // indirect
