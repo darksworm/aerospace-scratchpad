@@ -25,6 +25,7 @@ This is heavily inspired by i3wm's scratchpad feature, but follows aerospace com
 See:
 https://i3wm.org/docs/userguide.html#_scratchpad
 `,
+		Version: VERSION,
 	}
 
 	// Commands
