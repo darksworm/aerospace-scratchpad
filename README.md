@@ -111,6 +111,7 @@ And in your config add:
 ```toml
 [exec]
     inherit-env-vars = true
+# OR
 [exec.env-vars]
     # Replace 'aerospace-scratchpad/install/path' with the actual path from the above command
     PATH = 'aerospace-scratchpad/install/path/bin:${PATH}'
