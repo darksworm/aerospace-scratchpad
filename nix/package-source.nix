@@ -1,7 +1,7 @@
 { pkgs, ... }:
   pkgs.buildGoModule rec {
     # name of our derivation
-    name = "aerospace-marks";
+    name = "aerospace-scratchpad";
     version = "source";
 
     # sources that will be used for our derivation.
@@ -15,8 +15,8 @@
     ];
 
     meta = with pkgs.lib; {
-      description = "aerospace-marks: I3wm like marks feature";
-      homepage = "https://github.com/cristianoliveira/aerospace-marks";
+      description = "aerospace-scratchpad: Scratchpad for AeroSpaceWM";
+      homepage = "https://github.com/cristianoliveira/aerospace-scratchpad";
       license = licenses.mit;
       maintainers = with maintainers; [ cristianoliveira ];
     };

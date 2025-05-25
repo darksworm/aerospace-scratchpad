@@ -1,5 +1,5 @@
 {
-  description = "aerospace-marks: I3wm like marks feature";
+  description = "aerospace-scratchpad: Scratchpad for AeroSpaceWM";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";

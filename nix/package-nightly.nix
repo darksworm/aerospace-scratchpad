@@ -20,7 +20,7 @@
     ];
 
     meta = with pkgs.lib; {
-      description = "aerospace-scratchpad: SwayWM like scratchpad for AeroSpaceWM";
+      description = "aerospace-scratchpad: Scratchpad for AeroSpaceWM";
       homepage = "https://github.com/cristianoliveira/aerospace-scratchpad";
       license = licenses.mit;
       maintainers = with maintainers; [ cristianoliveira ];
