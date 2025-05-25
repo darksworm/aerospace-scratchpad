@@ -51,8 +51,9 @@ func CaptureStdOut(f func() error) (string, error) {
 	return buf.String(), nil
 }
 
-type MockEmptyAerspaceMarkWindows struct {}
-func (d *MockEmptyAerspaceMarkWindows) Client() (*aerospacecli.AeroSpaceWM) {
+type MockEmptyAerspaceMarkWindows struct{}
+
+func (d *MockEmptyAerspaceMarkWindows) Client() *aerospacecli.AeroSpaceWM {
 	return &aerospacecli.AeroSpaceWM{}
 }
 

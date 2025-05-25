@@ -7,8 +7,8 @@ import (
 )
 
 type AeroSpaceTree struct {
-	Windows []aerospacecli.Window
-	Workspace *aerospacecli.Workspace
+	Windows         []aerospacecli.Window
+	Workspace       *aerospacecli.Workspace
 	FocusedWindowId int
 }
 
@@ -55,4 +55,3 @@ func ExtractFocusedWindow(tree []AeroSpaceTree) *aerospacecli.Window {
 	}
 	return nil
 }
-

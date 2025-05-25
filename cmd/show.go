@@ -105,7 +105,7 @@ Similar to SwayWM it will toggle show/hide the window if called multiple times.
 
 						fmt.Printf("Window '%+v' hidden to scratchpad\n", window)
 						return
-				  }
+					}
 
 					aerospaceClient.SetFocusByWindowID(window.WindowID)
 					fmt.Printf("Setting focus to window '%s'\n", window.AppName)

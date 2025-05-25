@@ -31,7 +31,7 @@ Different from 'show' commadn, this command will not toggle the window.
 		),
 
 		Run: func(cmd *cobra.Command, args []string) {
-			windowNamePattern :=  strings.TrimSpace(args[0])
+			windowNamePattern := strings.TrimSpace(args[0])
 
 			windows, err := aerospaceClient.GetAllWindows()
 			if err != nil {
@@ -60,7 +60,7 @@ Different from 'show' commadn, this command will not toggle the window.
 				aerospaceClient.MoveWindowToWorkspace(
 					window.WindowID,
 					focusedWorkspace.Workspace,
-				);
+				)
 
 				if err = aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
 					stderr.Printf("Error: unable to set focus to window '%+v'\n", window)
