@@ -72,6 +72,14 @@ cmd-shit-ctrl-1 = [
 
 ## Installation
 
+### Using Homebrew
+
+If you have Homebrew installed, you can install `aerospace-marks` using the following command:
+
+```bash
+brew install cristianoliveira/tap/aerospace-marks
+```
+
 ### Nix
 
 If you have Nix installed, you can build and install `aerospace-scratchpad` using the following command:
@@ -113,7 +121,7 @@ And in your config add:
     inherit-env-vars = true
 # OR
 [exec.env-vars]
-    # Replace 'aerospace-scratchpad/install/path' with the actual path from the above command
+    # Replace 'aerospace-scratchpad/install/path' with the actual path from the command above
     PATH = 'aerospace-scratchpad/install/path/bin:${PATH}'
 ```
 
