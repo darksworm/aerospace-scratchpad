@@ -6,7 +6,7 @@
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 1234,
     },
 }
@@ -26,14 +26,14 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad show 
 
 Output
-Window '5678 | Finder | ' hidden to scratchpad
+Window '5678 | Finder ' hidden to scratchpad
 
 Error
 <nil>
@@ -46,14 +46,14 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad show Finder
 
 Output
-Window '5678 | Finder | ' hidden to scratchpad
+Window '5678 | Finder ' hidden to scratchpad
 
 Error
 <nil>
@@ -66,21 +66,21 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 0,
     },
     {
         Windows: {
             {WindowID:91011, WindowTitle:"", AppName:"Terminal"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws2"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws2"},
         FocusedWindowId: 91011,
     },
 }
 aerospace-scratchpad show Finder
 
 Output
-Window '5678 | Finder | ' is summoned
+Window '5678 | Finder ' is summoned
 
 Error
 <nil>
@@ -93,14 +93,14 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad show 
 
 Output
-Window '5678 | Finder | ' hidden to scratchpad
+Window '5678 | Finder ' hidden to scratchpad
 
 Error
 <nil>
@@ -113,7 +113,7 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 1234,
     },
 }
@@ -133,14 +133,14 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad show Finder
 
 Output
-Window '5678 | Finder | ' hidden to scratchpad
+Window '5678 | Finder ' hidden to scratchpad
 
 Error
 <nil>
@@ -153,21 +153,21 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 0,
     },
     {
         Windows: {
             {WindowID:91011, WindowTitle:"", AppName:"Terminal"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws2"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws2"},
         FocusedWindowId: 91011,
     },
 }
 aerospace-scratchpad show Finder
 
 Output
-Window '5678 | Finder | ' is summoned
+Window '5678 | Finder ' is summoned
 
 Error
 <nil>

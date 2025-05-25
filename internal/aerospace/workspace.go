@@ -3,7 +3,7 @@ package aerospace
 import (
 	"fmt"
 
-	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 )
 
 type AerospaceWorkspace interface {

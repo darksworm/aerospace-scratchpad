@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cristianoliveira/aerospace-marks/pkgs/aerospacecli"
+	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/mocks/aerospacecli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/testutils"
@@ -45,7 +45,7 @@ func TestShowCmd(t *testing.T) {
 		focusedTree := testutils.ExtractFocusedTree(tree)
 		focusedWindow := testutils.ExtractFocusedWindow(tree)
 
-		aerospaceClient := aerospacecli_mock.NewMockAeroSpaceClient(ctrl)
+		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 		gomock.InOrder(
 			aerospaceClient.EXPECT().
 				GetFocusedWindow().
@@ -131,7 +131,7 @@ func TestShowCmd(t *testing.T) {
 			focusedTree := testutils.ExtractFocusedTree(tree)
 			focusedWindow := testutils.ExtractFocusedWindow(tree)
 
-			aerospaceClient := aerospacecli_mock.NewMockAeroSpaceClient(ctrl)
+			aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 			gomock.InOrder(
 				aerospaceClient.EXPECT().
 					GetAllWindows().
@@ -211,7 +211,7 @@ func TestShowCmd(t *testing.T) {
 		focusedTree := testutils.ExtractFocusedTree(tree)
 		focusedWindow := testutils.ExtractFocusedWindow(tree)
 
-		aerospaceClient := aerospacecli_mock.NewMockAeroSpaceClient(ctrl)
+		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 		gomock.InOrder(
 			aerospaceClient.EXPECT().
 				GetAllWindows().
@@ -309,7 +309,7 @@ func TestShowCmd(t *testing.T) {
 		focusedTree := testutils.ExtractFocusedTree(tree)
 		focusedWindow := testutils.ExtractFocusedWindow(tree)
 
-		aerospaceClient := aerospacecli_mock.NewMockAeroSpaceClient(ctrl)
+		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 		gomock.InOrder(
 			aerospaceClient.EXPECT().
 				GetAllWindows().

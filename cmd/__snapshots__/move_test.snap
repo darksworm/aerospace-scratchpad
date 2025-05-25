@@ -24,14 +24,14 @@ unable to get windows
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad move Notepad
 
 Output
-Moving window 1234 | Notepad |  to scratchpad
+Moving window 1234 | Notepad  to scratchpad
 
 Error
  <nil>
@@ -45,7 +45,7 @@ Error
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
@@ -54,7 +54,7 @@ aerospace-scratchpad move Finder
 Output
 
 Error
-unable to move window '5678 | Finder | ' to scratchpad
+unable to move window '5678 | Finder ' to scratchpad
 
 ---
 
@@ -65,14 +65,14 @@ unable to move window '5678 | Finder | ' to scratchpad
             {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
             {WindowID:5678, WindowTitle:"", AppName:"Finder"},
         },
-        Workspace:       &aerospacecli.Workspace{Workspace:"ws1"},
+        Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
     },
 }
 aerospace-scratchpad move 
 
 Output
-Moving window 5678 | Finder |  to scratchpad
+Moving window 5678 | Finder  to scratchpad
 
 Error
  <nil>
