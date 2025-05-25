@@ -11,7 +11,7 @@ require (
 )
 
 require (
-	github.com/cristianoliveira/aerospace-ipc v0.0.0-20250525153650-59d68596bf12
+	github.com/cristianoliveira/aerospace-ipc v0.0.1 // indirect
 	github.com/gkampitakis/ciinfo v0.3.1 // indirect
 	github.com/gkampitakis/go-diff v1.3.2 // indirect
 	github.com/goccy/go-yaml v1.15.13 // indirect
