@@ -124,6 +124,12 @@ And in your config add:
     # Replace 'aerospace-scratchpad/install/path' with the actual path from the command above
     PATH = 'aerospace-scratchpad/install/path/bin:${PATH}'
 ```
+## How does it work?
+
+This extension relies on IPC (Inter-process communication) which connect directly with AeroSpace Unix Socket, similar to what `aerospace` builtin cli does, removing the overhead of launching processes
+as in a bash script
+
+See: https://github.com/cristianoliveira/aerospace-ipc
 
 ## License
 
