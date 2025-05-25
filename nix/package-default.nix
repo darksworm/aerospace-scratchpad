@@ -11,13 +11,14 @@
       owner = "cristianoliveira";
       repo = "aerospace-scratchpad";
       rev = version;
-      sha256 = "sha256-jSvygC7ufapMk1QszHYgrzUs73fbpmZhdFAFKUs3jo4=";
+      sha256 = "sha256-hkPNzJaAOsaKJXZ/C4sFuMfKTFQxCSIk2Z1th9Hsha0=";
     };
 
-    vendorHash = "sha256-BVv2GPPZzTUfBASPqOwRfpFaD07XY74EostJ5F6ryfA=";
+    vendorHash = "sha256-h/GtBDJOOyVXfSv/o4hozZAcHPlg2uJLApy5r3WP9aE=";
 
     ldflags = [
       "-s" "-w"
+      # "-mod=mod" # FIXME: go forces vendoring some dependencies
       "-X main.VERSION=${version}"
     ];
 
