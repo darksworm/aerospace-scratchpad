@@ -28,8 +28,8 @@ Similar to Sway's `show` this command will:
  - Move the window to scratchpad if it is focused and matches the <pattern>
  - If a scratchpad window is in another workspace, it will move it to the current workspace.
  - If a scratchpad window is already in the current workspace, it will focus it.
- - If no window matches the pattern, it will do nothing.
- - If multiple windows match the pattern, it will bring all of them to the current workspace.
+ - If multiple windows match a pattern, it will bring all of them to the current workspace.
+ - If no window matches a pattern, it will do nothing.
 
 The `pattern` is a regex pattern to match the "App Name"
 
