@@ -74,10 +74,10 @@ cmd-shit-ctrl-1 = [
 
 ### Using Homebrew
 
-If you have Homebrew installed, you can install `aerospace-marks` using the following command:
+If you have Homebrew installed, you can install `aerospace-scratchpad` using the following command:
 
 ```bash
-brew install cristianoliveira/tap/aerospace-marks
+brew install cristianoliveira/tap/aerospace-scratchpad
 ```
 
 ### Nix
