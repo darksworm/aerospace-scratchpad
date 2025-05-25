@@ -126,8 +126,7 @@ And in your config add:
 ```
 ## How does it work?
 
-This extension relies on IPC (Inter-process communication) which connect directly with AeroSpace Unix Socket, similar to what `aerospace` builtin cli does, removing the overhead of launching processes
-as in a bash script
+This extension uses IPC (Inter-Process Communication) to communicate directly with the AeroSpace Unix socket, just like the built-in AeroSpace CLI. By avoiding repeated process spawning, this approach offers lower latency and better efficiency, specially when one have to query AeroSpace many time.
 
 See: https://github.com/cristianoliveira/aerospace-ipc
 
