@@ -64,6 +64,16 @@ The `pattern` is a regex pattern to match the "App Name"
 aerospace-scratchpad summon <pattern>
 ```
 
+## Command: `next`
+
+This command will summon the next window from the scratchpad workspace, till there are no more windows to summon.
+
+### USAGE
+
+```bash
+aerospace-scratchpad next
+```
+
 ## Implementation details
 
 ### Scratchpad workspace
