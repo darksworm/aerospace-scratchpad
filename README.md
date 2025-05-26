@@ -64,9 +64,9 @@ can turn any window into a scratchpad window and bind a toggle key on the fly!
 # otherwise show/hide window marked as `sp-1`
 cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show \"$(aerospace-marks get sp-1 -a)\""
 
-# Unmark sp-1 so you can reuse the mark for another window
+# Mark current window with sp-1 so you can use the shortcut
 cmd-shit-ctrl-1 = [
-    "exec-and-forget aerospace-marks unmark sp-1"
+    "exec-and-forget aerospace-marks mark sp-1"
 ]
 ```
 
