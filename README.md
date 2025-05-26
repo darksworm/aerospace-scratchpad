@@ -45,6 +45,9 @@ cmd-ctrl-2 = [
                         aerospace-scratchpad move Finder
     """
 ]
+
+# Bring windows one by one to current workspace
+ctrl-minus = "exec-and-forget aerospace-scratchpad next"
 ```
 
 ## Advanced Usage
