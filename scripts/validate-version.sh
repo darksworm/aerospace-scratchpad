@@ -15,7 +15,7 @@ if [ -z "$VERSION" ]; then
         exit 1
     fi
 
-    echo "Version not found in cmd/main.go."
+    echo "Version not found in $VERSION_FILE."
     read -p "Do you want to add the version to cmd/main.go? (y/n) " answer
     if [[ "$answer" == "y" ]]; then
 
