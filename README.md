@@ -29,7 +29,7 @@ Summon or move a window from the scratchpad workspace to the current workspace.
 aerospace-scratchpad show <pattern>
 ```
 
-**Future implementation** As of now show doesn't toggle the scratchpad, but I'll implement this behaviour
+To find the correct `pattern` run `aerospace list-windows --all --json | grep app-name`
 
 ### Config Usage
 
