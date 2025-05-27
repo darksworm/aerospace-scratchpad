@@ -20,9 +20,10 @@ func SummonCmd(
 	showCmd := &cobra.Command{
 		Use:   "summon <pattern>",
 		Short: "Summon a window from scratchpad",
-		Long: `Summon a window from scratchpad on the current workspace.
+		Long: `Summon a window from the scratchpad to the current workspace.
 
-Different from 'show' commadn, this command will not toggle the window.
+This command brings a window from the scratchpad to the current workspace using a regex to match the window name or title.
+If no pattern is provided, it summons the first window in the scratchpad.
 `,
 
 		Args: cobra.MatchAll(

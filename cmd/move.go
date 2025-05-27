@@ -21,11 +21,10 @@ func MoveCmd(
 	moveCmd := &cobra.Command{
 		Use:   "move <pattern>",
 		Short: "Move a window to scratchpad",
-		Long: `Move a window to scratchpad.
+		Long: `Move a window to the scratchpad.
 
-This command moves a window to the scratchpad.
-It uses a regex to match the window name or title.
-If no pattern is provided, moves the currently focused window.
+This command moves a window to the scratchpad using a regex to match the window name or title.
+If no pattern is provided, it moves the currently focused window.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var windowNamePattern string
