@@ -62,14 +62,14 @@ can turn any window into a scratchpad window and bind a toggle key on the fly!
 ```toml
 # ~/.config/aerospace/config.toml
 [mode.main.binding]
-# Toggle show/hide the window marked as 'sp-1' as scratchpad
-# If window is not marked does nothing
-cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show \"$(aerospace-marks get sp-1 -a)\""
-
 # Mark current window with sp-1 so you can use the shortcut
 cmd-shit-ctrl-1 = [
     "exec-and-forget aerospace-marks mark sp-1"
 ]
+
+# Toggle show/hide the window marked as 'sp-1' as scratchpad window
+# If window is not marked does nothing
+cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show \"$(aerospace-marks get sp-1 -a)\""
 ```
 
 ## Installation
