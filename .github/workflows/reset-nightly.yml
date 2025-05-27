@@ -7,10 +7,9 @@ on:
 
 jobs:
   reset:
-    name: Runner
     runs-on: ubuntu-latest
     steps:
-      - name: Reset dev branch to main
-        uses: nicksnell/action-reset-repo@main
+      - name: Reset dev branch to master
+        uses: nicksnell/action-reset-repo@master
         with:
           reset_branch: nighlty
