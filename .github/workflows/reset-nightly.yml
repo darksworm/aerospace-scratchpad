@@ -12,4 +12,5 @@ jobs:
       - name: Reset dev branch to master
         uses: nicksnell/action-reset-repo@master
         with:
-          reset_branch: nighlty
+          base_branch: main
+          reset_branch: nightly
