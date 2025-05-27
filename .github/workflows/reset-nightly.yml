@@ -6,15 +6,11 @@ on:
     - cron: '0 0 * * *'  # Runs every day at midnight UTC
 
 jobs:
-  reset-nightly:
+  reset:
+    name: Runner
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Reset dev branch to main
+        uses: nicksnell/action-reset-repo@main
         with:
-          ref: main
-
-      - name: Reset nightly branch
-        run: |
-          git checkout -B nightly
-          git push origin nightly --force
+          reset_branch: nighlty
