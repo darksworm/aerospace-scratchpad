@@ -23,7 +23,7 @@ func MoveCmd(
 		Short: "Move a window to scratchpad",
 		Long: `Move a window to the scratchpad.
 
-This command moves a window to the scratchpad using a regex to match the window name or title.
+This command moves a window to the scratchpad using a regex to match the app name.
 If no pattern is provided, it moves the currently focused window.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {

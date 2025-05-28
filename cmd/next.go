@@ -17,9 +17,10 @@ func NextCmd(aerospaceClient aerospacecli.AeroSpaceClient) *cobra.Command {
 	nextCmd := &cobra.Command{
 		Use:   "next",
 		Short: "Shows the next scratchpad window",
-		Long: `Show the next scratchpad window in the current workspace.
+		Long: `Shows the next scratchpad window in the current workspace.
 
 This command cycles through the scratchpad windows, displaying them in the current workspace.
+It does not send the windows back to the scratchpad, but rather focuses the next available scratchpad window.
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
