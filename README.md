@@ -17,6 +17,7 @@ From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
 > As the name indicates, this is useful for having a window with your favorite editor always at hand. However, you can also use this for other permanently running applications which you don’t want to see all the time: Your music player, alsamixer, maybe even your mail client…?
 
 [What Are Scratchpads and WHY Are They Good?](https://youtu.be/72ccdlOWe20?si=tyYhdW6_BRJSCSHr)
+
 [The origin of this project](https://github.com/nikitabobko/AeroSpace/issues/272)
 
 ## Basic Usage
