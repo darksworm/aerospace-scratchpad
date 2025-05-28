@@ -8,8 +8,6 @@ import (
 	"regexp"
 	"strings"
 
-	_ "net/http/pprof"
-
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
@@ -27,15 +25,10 @@ func ShowCmd(
 		Long: `Show a window from the scratchpad in the current workspace.
 By default, it will set the window to floating and focus on it.
 
-Similar to SwayWM, it will toggle show/hide the window if called multiple times.
+Similar to I3/Sway WM, it will toggle show/hide the window if called multiple times.
 `,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) < 1 {
-				stderr.Println("Error: missing pattern argument")
-				return
-			}
-
 			windowNamePattern := args[0]
 			windowNamePattern = strings.TrimSpace(windowNamePattern)
 			if windowNamePattern == "" {
