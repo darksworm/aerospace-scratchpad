@@ -47,9 +47,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0 # Ensure we have the full history for versioning
 
       - uses: cachix/install-nix-action@v27
         with:
