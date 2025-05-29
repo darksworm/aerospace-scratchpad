@@ -5,10 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
-	"time"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
@@ -31,10 +29,6 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 `,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			start := time.Now()
-			defer func() {
-				log.Printf("Finished in %s", time.Since(start))
-			}()
 			windowNamePattern := args[0]
 			windowNamePattern = strings.TrimSpace(windowNamePattern)
 			if windowNamePattern == "" {
@@ -47,14 +41,12 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 				stderr.Println("Error: unable to get windows")
 				return
 			}
-			log.Printf("GetAllWindows took %s", time.Since(start))
 
 			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
 			if err != nil {
 				stderr.Println("Error: unable to get focused workspace")
 				return
 			}
-			log.Printf("GetFocusedWorkspace took %s", time.Since(start))
 
 			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
 
@@ -85,7 +77,6 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					isWindowInFocusedWorkspace = window.Workspace == focusedWorkspace.Workspace
 
 				}
-				log.Printf("IsWindowInWorkspace took %s", time.Since(start))
 
 				if isWindowInFocusedWorkspace {
 					isWindowFocused, err := querier.IsWindowFocused(window.WindowID)
@@ -112,12 +103,10 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					}
 
 					aerospaceClient.SetFocusByWindowID(window.WindowID)
-					log.Printf("SetFocusByWindowID took %s", time.Since(start))
 					fmt.Printf("Setting focus to window '%s'\n", window.AppName)
 					return
 				}
 
-				log.Printf("Bef MoveWindowToWorkspace took %s", time.Since(start))
 				if err = aerospaceClient.MoveWindowToWorkspace(
 					window.WindowID,
 					focusedWorkspace.Workspace,
@@ -125,13 +114,11 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					stderr.Printf("Error: unable to move window '%+v' to workspace '%s'\n", window, focusedWorkspace.Workspace)
 					return
 				}
-				log.Printf("MoveWindowToWorkspace took %s", time.Since(start))
 
 				if err = aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
 					stderr.Printf("Error: unable to set focus to window '%+v'\n", window)
 					return
 				}
-				log.Printf("SetFocusByWindowID took %s", time.Since(start))
 
 				fmt.Printf("Window '%+v' is summoned\n", window)
 			}
