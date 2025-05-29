@@ -139,8 +139,9 @@ See: https://github.com/cristianoliveira/aerospace-ipc
 
 ### Benchmarks
 
-Comparing with a script that does the same this extension runs runs *~150ms* faster.
-See: `scripts/benchmarks.sh` for details, and you can run it yourself.
+Comparing with a script that does the same this extension runs about *150ms to 250ms* faster.
+
+See: `scripts/benchmarks.sh` for details, and test it yourself.
 
 ## License
 
