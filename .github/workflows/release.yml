@@ -21,6 +21,7 @@ jobs:
             goos: windows
     steps:
       - uses: actions/checkout@v4
+        if: github.event_name == 'release'
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -46,6 +47,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0 # Ensure we have the full history for versioning
           ref: main
 
       - uses: cachix/install-nix-action@v27
