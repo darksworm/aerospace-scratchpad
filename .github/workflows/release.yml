@@ -3,6 +3,7 @@ name: Release Go Binaries
 on:
   release:
     types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,6 +28,7 @@ jobs:
           go-version: '1.24'  # Specify your Go version
 
       - name: Build and Release
+        if: github.event_name == 'release'
         uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,3 +61,4 @@ jobs:
         with:
           commit-message: "chore(nix): bump nix hashes and version"
           title: "chore(nix): bump nix hashes and version"
+          base: main
