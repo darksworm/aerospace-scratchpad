@@ -31,4 +31,5 @@ jobs:
         with:
           commit-message: "chore(nix): bump nightly hashes and version"
           title: "chore(nix): bump nightly hashes and version"
+          body: "This PR updates the Nix nightly package hashes and version."
           base: main

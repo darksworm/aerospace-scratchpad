@@ -64,4 +64,5 @@ jobs:
         with:
           commit-message: "chore(nix): bump nix hashes and version"
           title: "chore(nix): bump nix hashes and version"
+          body: "This PR updates the Nix default package hashes and version."
           base: main
