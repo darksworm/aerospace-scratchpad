@@ -24,6 +24,7 @@ jobs:
         if: github.event_name == 'release'
 
       - name: Set up Go
+        if: github.event_name == 'release'
         uses: actions/setup-go@v4
         with:
           go-version: '1.24'  # Specify your Go version
@@ -47,8 +48,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensure we have the full history for versioning
           ref: main
+          fetch-depth: 0 # Ensure we have the full history for versioning
 
       - uses: cachix/install-nix-action@v27
         with:
