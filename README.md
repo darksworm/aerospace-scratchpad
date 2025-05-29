@@ -77,6 +77,8 @@ cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show \"$(aerospace-marks get 
 
 ## Installation
 
+**Min AeroSpace version**: 0.15.x
+
 ### Using Homebrew
 
 If you have Homebrew installed, you can install `aerospace-scratchpad` using the following command:
@@ -134,6 +136,11 @@ And in your config add:
 This extension uses IPC (Inter-Process Communication) to communicate directly with the AeroSpace Unix socket, just like the built-in AeroSpace CLI. By avoiding repeated process spawning, this approach offers lower latency and better efficiency, specially when one have to query AeroSpace many time.
 
 See: https://github.com/cristianoliveira/aerospace-ipc
+
+### Benchmarks
+
+Comparing with a script that does the same this extension runs runs *~150ms* faster.
+See: `scripts/benchmarks.sh` for details, and you can run it yourself.
 
 ## License
 

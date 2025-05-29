@@ -3,8 +3,7 @@ module github.com/cristianoliveira/aerospace-scratchpad
 go 1.24.2
 
 require (
-	github.com/cristianoliveira/aerospace-ipc v0.0.1 // indirect
-	github.com/spf13/cobra v1.9.1 // indirect
+	github.com/cristianoliveira/aerospace-ipc v0.0.3-0.20250529132745-71cbb876fffa // indirect
 	github.com/gkampitakis/ciinfo v0.3.1 // indirect
 	github.com/gkampitakis/go-diff v1.3.2 // indirect
 	github.com/gkampitakis/go-snaps v0.5.11 // indirect
@@ -14,6 +13,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/maruel/natural v1.1.1 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
+	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

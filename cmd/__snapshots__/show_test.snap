@@ -3,8 +3,8 @@
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 1234,
@@ -23,8 +23,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
@@ -43,15 +43,15 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 0,
     },
     {
         Windows: {
-            {WindowID:91011, WindowTitle:"", AppName:"Terminal"},
+            {WindowID:91011, WindowTitle:"", AppName:"Terminal", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws2"},
         FocusedWindowId: 91011,
@@ -70,8 +70,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 1234,
@@ -90,8 +90,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
@@ -110,15 +110,15 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 0,
     },
     {
         Windows: {
-            {WindowID:91011, WindowTitle:"", AppName:"Terminal"},
+            {WindowID:91011, WindowTitle:"", AppName:"Terminal", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws2"},
         FocusedWindowId: 91011,
@@ -137,8 +137,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
@@ -157,8 +157,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,

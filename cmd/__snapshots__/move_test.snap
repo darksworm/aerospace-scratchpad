@@ -21,8 +21,8 @@ unable to get windows
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
@@ -42,8 +42,8 @@ Error
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
@@ -62,8 +62,8 @@ unable to move window '5678 | Finder ' to scratchpad
 []testutils.AeroSpaceTree{
     {
         Windows: {
-            {WindowID:1234, WindowTitle:"", AppName:"Notepad"},
-            {WindowID:5678, WindowTitle:"", AppName:"Finder"},
+            {WindowID:1234, WindowTitle:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
+            {WindowID:5678, WindowTitle:"", AppName:"Finder", AppBundleID:"", Workspace:""},
         },
         Workspace:       &aerospace.Workspace{Workspace:"ws1"},
         FocusedWindowId: 5678,
