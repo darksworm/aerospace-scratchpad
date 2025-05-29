@@ -31,3 +31,4 @@ jobs:
         with:
           commit-message: "chore(nix): bump nightly hashes and version"
           title: "chore(nix): bump nightly hashes and version"
+          base: main
