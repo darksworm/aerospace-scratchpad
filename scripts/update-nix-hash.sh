@@ -13,7 +13,6 @@ sed -i 's/sha256-.*=//g' "$NIX_FILE"
 rm -f build.log
 
 nix build $FLAKE_TASK 2> build.log
-echo "aaaaa"
 
 SHA256=$(grep "got:" build.log | grep -o "sha256-.*=" | cut -d'-' -f2)
 echo "nix hash SHA256: $SHA256"
