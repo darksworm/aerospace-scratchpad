@@ -8,7 +8,9 @@ Please report any issues or ideas in the [issues](https://github.com/cristianoli
 
 ## Demo
 
-https://github.com/user-attachments/assets/108149b7-772e-4972-bc3f-7b0199b8ef6a
+
+https://github.com/user-attachments/assets/48642cc7-3a5f-4037-863a-eaa493a7b10c
+
 
 From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
 > 6.21. Scratchpad
