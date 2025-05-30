@@ -115,7 +115,12 @@ This will download and install the latest version of `aerospace-scratchpad` to y
 
 #### Post installation
 
-After installing, you may need to include aerospace-scratchpad in aerospace context.
+After installing, start by checking the compatibility and update accordonly:
+```bash
+aerospace-scratchpad info
+```
+
+After, you may need to include aerospace-scratchpad in aerospace context.
 
 Check where the binary is installed, run:
 ```bash
@@ -131,6 +136,7 @@ And in your config add:
     # Replace 'aerospace-scratchpad/install/path' with the actual path from the command above
     PATH = 'aerospace-scratchpad/install/path/bin:${PATH}'
 ```
+
 ## How does it work?
 
 This extension uses IPC (Inter-Process Communication) to communicate directly with the AeroSpace Unix socket, just like the built-in AeroSpace CLI. By avoiding repeated process spawning, this approach offers lower latency and better efficiency, specially when one have to query AeroSpace many time.
