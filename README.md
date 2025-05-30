@@ -115,19 +115,19 @@ This will download and install the latest version of `aerospace-scratchpad` to y
 
 #### Post installation
 
-After installing, start by checking the compatibility and update accordonly:
+After installing, start by checking compatibility and updating Aerospace accordingly:
 ```bash
 aerospace-scratchpad info
 ```
 
-After, you may need to include aerospace-scratchpad in aerospace context.
+Next, you may need to include aerospace-scratchpad in the Aerospace context.
 
-Check where the binary is installed, run:
+To check where the binary is installed, run:
 ```bash
 echo $(which aerospace-scratchpad) | sed 's/\/aerospace-scratchpad//g'
 ```
 
-And in your config add:
+Then, in your configuration file, add:
 ```toml
 [exec]
     inherit-env-vars = true
