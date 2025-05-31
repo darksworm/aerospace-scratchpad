@@ -147,7 +147,19 @@ See: https://github.com/cristianoliveira/aerospace-ipc
 
 ### Benchmarks
 
-Comparing with a script that does the same this extension runs about *150ms to 250ms* faster.
+This CLI runs about *3x faster* than a bash script that does the same.
+
+```bash
+# time aerospace-scratchpad show Finder
+# aerospace-scratchpad show Finder  0.01s user 0.01s system 12% cpu 0.125 total
+# aerospace-scratchpad show Finder  0.01s user 0.01s system 14% cpu 0.097 total
+# aerospace-scratchpad show Finder  0.01s user 0.01s system 12% cpu 0.140 total
+
+# time bash scripts/scratchpad.sh Finder
+# scripts/benchmark.sh Finder  0.13s user 0.08s system 75% cpu 0.281 total
+# scripts/benchmark.sh Finder  0.14s user 0.09s system 82% cpu 0.276 total
+# scripts/benchmark.sh Finder  0.14s user 0.09s system 80% cpu 0.289 total
+```
 
 See: `scripts/benchmarks.sh` for details, and test it yourself.
 

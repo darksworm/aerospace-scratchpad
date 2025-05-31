@@ -103,7 +103,7 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					}
 
 					aerospaceClient.SetFocusByWindowID(window.WindowID)
-					fmt.Printf("Setting focus to window '%s'\n", window.AppName)
+					fmt.Printf("Window '%+v' is showed\n", window)
 					return
 				}
 
