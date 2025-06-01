@@ -1,4 +1,7 @@
 # aerospace-scratchpad
+[![Go project version](https://badge.fury.io/go/github.com%2Fcristianoliveira%2Faerospace-scratchpad.svg)](https://badge.fury.io/go/github.com%2Fcristianoliveira%2Faerospace-scratchpad)
+[![CI](https://github.com/cristianoliveira/aerospace-scratchpad/actions/workflows/on-push.yml/badge.svg)](https://github.com/cristianoliveira/aerospace-scratchpad/actions/workflows/on-push.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/cristianoliveira/aerospace-scratchpad.svg)](https://pkg.go.dev/github.com/cristianoliveira/aerospace-scratchpad)
 
 A I3/Sway like scratchpad extension for [AeroSpace WM](https://github.com/nikitabobko/AeroSpace)
 
