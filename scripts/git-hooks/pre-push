@@ -38,11 +38,7 @@ fi
 # Run environment setup
 
 # Try and catch any errors during setup
-{
-    setup_environment
-} || {
-    echo "Error setting up environment. Please check your setup."
-}
+setup_environment
 
 # Run tests
 echo "Running tests..."
