@@ -1,1 +1,0 @@
-- feat: add way to set focus on the next match - next <pattern>
