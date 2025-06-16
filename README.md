@@ -154,7 +154,7 @@ Then, in your configuration file, add:
 
 ## How does it work?
 
-This extension uses IPC (Inter-Process Communication) to communicate directly with the AeroSpace Unix socket, just like the built-in AeroSpace CLI. By avoiding repeated process spawning, this approach offers lower latency and better efficiency, specially when one have to query AeroSpace many time.
+This extension uses Inter-Process Communication (IPC), specifically through a Unix socket, to communicate directly with the AeroSpace service, just like the built-in AeroSpace CLI. By avoiding repeated process spawning, this approach offers lower latency and better efficiency, especially when one has to query AeroSpace many times.
 
 See: https://github.com/cristianoliveira/aerospace-ipc
 
