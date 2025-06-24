@@ -27,8 +27,9 @@ If applicable, add screenshots e or videos to help explain your problem.
 
 **Environment (please complete the following information):**
  - OS: [e.g. Windows, Linux, macOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. v1.2.3]
+ - Aerospace Version [e.g. v1.2.3]
+ - Aerospace Scratchpad Version [e.g. v1.2.3]
+ - How many monitors are you using? [e.g. 1, 2, 3]
 
 **Additional context**
 Add any other context about the problem here.
