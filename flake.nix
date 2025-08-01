@@ -24,6 +24,13 @@
             # To generate the mock for the interfaces, run:
             # mockgen -source=./pkg/cli/cli.go -destination=./pkg/cli/mock/mock_cli.go -package=mock
             mockgen
+
+            # To proxy connections and debug
+            # For testing Unix connections
+            # USAGE:
+            # sudo mv /tmp/bobko.aerospace-$USER.sock /tmp/bobko.aerospace-$USER.sock.real
+            # socat -v UNIX-LISTEN:/tmp/bobko.aerospace-$USER.sock,fork UNIX-CONNECT:/tmp/bobko.aerospace-$USER.sock.real | tee /tmp/socket.log
+            socat
           ];
         };
 
