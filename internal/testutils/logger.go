@@ -1,7 +1,7 @@
 package testutils
 
 import (
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
+	"github.com/ilmars/aerospace-sticky/internal/logger"
 )
 
 type TestingLogger struct {

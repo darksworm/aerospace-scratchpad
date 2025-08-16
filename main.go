@@ -8,8 +8,8 @@ import (
 	"log"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/cmd"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
+	"github.com/ilmars/aerospace-sticky/cmd"
+	"github.com/ilmars/aerospace-sticky/internal/logger"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 		}
 	}()
 	logger.SetDefaultLogger(defaultLogger)
-	defaultLogger.LogInfo("Executing Aerospace Scratchpad CLI")
+	defaultLogger.LogInfo("Executing Aerospace Sticky CLI")
 
 	aerospaceMarkClient, err := aerospacecli.NewAeroSpaceClient()
 	if err != nil {

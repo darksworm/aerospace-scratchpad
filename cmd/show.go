@@ -5,14 +5,15 @@ package cmd
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strings"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
+	"github.com/ilmars/aerospace-sticky/internal/aerospace"
+	"github.com/ilmars/aerospace-sticky/internal/constants"
+	"github.com/ilmars/aerospace-sticky/internal/logger"
+	"github.com/ilmars/aerospace-sticky/internal/stderr"
 	"github.com/spf13/cobra"
 )
 
@@ -20,18 +21,44 @@ import (
 func ShowCmd(
 	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
+	var workspace string
+	var geometry string
+	
 	showCmd := &cobra.Command{
 		Use:   "show <pattern>",
-		Short: "Show a window from scratchpad",
-		Long: `Show a window from the scratchpad in the current workspace.
+		Short: "Show a window from scratchpad or specified workspace",
+		Long: `Show a window from the scratchpad (or custom workspace) in the current workspace.
 By default, it will set the window to floating and focus on it.
 
 Similar to I3/Sway WM, it will toggle show/hide the window if called multiple times.
+
+Examples:
+  # Show from default scratchpad
+  aerospace-scratchpad show Terminal
+  
+  # Show from custom workspace with geometry
+  aerospace-scratchpad show --workspace "dev" --geometry "60%x90%" Terminal
 `,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logger.GetDefaultLogger()
-			logger.LogDebug("SHOW: start command", "args", args)
+			logger.LogDebug("SHOW: start command", "args", args, "workspace", workspace, "geometry", geometry)
+			
+			// Create extended client for additional functionality
+			extendedClient := aerospace.NewExtendedAeroSpaceClient(aerospaceClient)
+			
+			// Determine source workspace
+			sourceWorkspace := workspace
+			if sourceWorkspace == "" {
+				sourceWorkspace = constants.DefaultScratchpadWorkspaceName
+			}
+			
+			// Use default geometry if not specified
+			targetGeometry := geometry
+			if targetGeometry == "" {
+				targetGeometry = constants.DefaultGeometry
+			}
+			
 			windowNamePattern := args[0]
 			windowNamePattern = strings.TrimSpace(windowNamePattern)
 			if windowNamePattern == "" {
@@ -107,7 +134,27 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					// Make sure that once hasAtLeastOneWindowFocused is true, it will remain true
 					hasAtLeastOneWindowFocused = hasAtLeastOneWindowFocused || isWindowFocused
 				} else {
-					windowsOutsideView = append(windowsOutsideView, window)
+					// Only consider windows that are in the source workspace as "outside view"
+					// For backward compatibility, if no workspace specified, check all workspaces
+					if workspace == "" {
+						// Original behavior: any window not in focused workspace
+						windowsOutsideView = append(windowsOutsideView, window)
+					} else {
+						// New behavior: only windows in the specified source workspace
+						var isInSourceWorkspace bool
+						if window.Workspace == "" {
+							isInSourceWorkspace, err = querier.IsWindowInWorkspace(window.WindowID, sourceWorkspace)
+							if err != nil {
+								stderr.Printf("Error: unable to check if window '%+v' is in workspace '%s'\n", window, sourceWorkspace)
+								return
+							}
+						} else {
+							isInSourceWorkspace = window.Workspace == sourceWorkspace
+						}
+						if isInSourceWorkspace {
+							windowsOutsideView = append(windowsOutsideView, window)
+						}
+					}
 
 				}
 
@@ -129,9 +176,11 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 			for _, window := range windowsOutsideView {
 				err := sendToFocusedWorkspace(
 					aerospaceClient,
+					extendedClient,
 					window,
 					focusedWorkspace,
 					!hasAtLeastOneWindowFocused,
+					targetGeometry,
 				)
 				if err != nil {
 					stderr.Printf(
@@ -176,9 +225,9 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 					"hasAtLeastOneWindowFocused", hasAtLeastOneWindowFocused,
 				)
 				if hasAtLeastOneWindowFocused {
-					if err = sendToScratchpad(aerospaceClient, window); err != nil {
+					if err = sendToScratchpad(aerospaceClient, window, sourceWorkspace); err != nil {
 						logger.LogDebug(
-							"Error: unable to move window '%+v' to scratchpad\n%s",
+							"Error: unable to move window '%+v' to workspace\n%s",
 							"window", window,
 							"error", err,
 						)
@@ -200,51 +249,86 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 		},
 	}
 
+	// Add flags
+	showCmd.Flags().StringVarP(&workspace, "workspace", "w", "", "Source workspace (defaults to .scratchpad)")
+	showCmd.Flags().StringVarP(&geometry, "geometry", "g", "", "Window geometry when pulled to current workspace (e.g., 60%x90%)")
+
 	return showCmd
 }
 
 func sendToScratchpad(
 	aerospaceClient aerospacecli.AeroSpaceClient,
 	window aerospacecli.Window,
+	targetWorkspace string,
 ) error {
 	logger := logger.GetDefaultLogger()
-	logger.LogDebug("SHOW: sendToScratchpad ", "window", window)
+	logger.LogDebug("SHOW: sendToScratchpad ", "window", window, "targetWorkspace", targetWorkspace)
+
+	// Create extended client for fullscreen functionality
+	extendedClient := aerospace.NewExtendedAeroSpaceClient(aerospaceClient)
 
 	err := aerospaceClient.MoveWindowToWorkspace(
 		window.WindowID,
-		constants.DefaultScratchpadWorkspaceName,
+		targetWorkspace,
 	)
 	logger.LogDebug(
 		"SHOW: after aerospaceClient.MoveWindowToWorkspace",
 		"window", window,
-		"to-workspace", constants.DefaultScratchpadWorkspaceName,
+		"to-workspace", targetWorkspace,
 		"error", err,
 	)
 	if err != nil {
 		return err
 	}
 
-	err = aerospaceClient.SetLayout(
-		window.WindowID,
-		"floating",
-	)
-	if err != nil {
-		fmt.Printf(
-			"Warn: unable to set layout for window '%+v' to floating\n%s",
-			window,
-			err,
+	// By default, make windows fullscreen when sent to a specific workspace
+	// Only use floating for the default scratchpad workspace
+	if targetWorkspace != constants.DefaultScratchpadWorkspaceName {
+		err = extendedClient.SetFullscreen(window.WindowID, true)
+		if err != nil {
+			fmt.Printf(
+				"Warn: unable to set fullscreen for window '%+v' in workspace %s\n%s",
+				window,
+				targetWorkspace,
+				err,
+			)
+		}
+		logger.LogDebug(
+			"SHOW: set fullscreen for window in specific workspace",
+			"window", window,
+			"workspace", targetWorkspace,
+			"error", err,
+		)
+	} else {
+		err = aerospaceClient.SetLayout(
+			window.WindowID,
+			"floating",
+		)
+		if err != nil {
+			fmt.Printf(
+				"Warn: unable to set layout for window '%+v' to floating\n%s",
+				window,
+				err,
+			)
+		}
+		logger.LogDebug(
+			"SHOW: set floating layout for scratchpad",
+			"window", window,
+			"error", err,
 		)
 	}
 
-	fmt.Printf("Window '%+v' hidden to scratchpad\n", window)
+	fmt.Printf("Window '%+v' hidden to workspace %s\n", window, targetWorkspace)
 	return nil
 }
 
 func sendToFocusedWorkspace(
 	aerospaceClient aerospacecli.AeroSpaceClient,
+	extendedClient *aerospace.ExtendedAeroSpaceClient,
 	window aerospacecli.Window,
 	focusedWorkspace *aerospacecli.Workspace,
 	shouldSetFocus bool,
+	geometry string,
 ) error {
 	if focusedWorkspace == nil {
 		return fmt.Errorf("focused workspace is nil")
@@ -257,9 +341,28 @@ func sendToFocusedWorkspace(
 		return fmt.Errorf("unable to move window '%+v' to workspace '%s': %w", window, focusedWorkspace.Workspace, err)
 	}
 
-	if shouldSetFocus {
+	// FIRST: Always focus the window immediately after moving it
+	if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
+		return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
+	}
+
+	// Try to activate the application directly to ensure it comes to front
+	// Use the window information that's already available from the caller
+	if window.AppName != "" {
+		// Try different activation methods
+		exec.Command("open", "-a", window.AppName).Run()
+		exec.Command("osascript", "-e", fmt.Sprintf(`tell application "%s" to activate`, window.AppName)).Run()
+	}
+
+	// SECOND: Apply geometry if specified (this will focus again internally)
+	if geometry != "" {
+		if err := extendedClient.ApplyGeometry(window.WindowID, geometry); err != nil {
+			return fmt.Errorf("unable to apply geometry to window '%+v': %w", window, err)
+		}
+		
+		// THIRD: Focus one more time after geometry changes
 		if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
-			return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
+			return fmt.Errorf("unable to set focus to window '%+v' after geometry: %w", window, err)
 		}
 	}
 

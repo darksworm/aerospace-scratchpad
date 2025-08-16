@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
+	"github.com/ilmars/aerospace-sticky/internal/constants"
 )
 
 type AeroSpaceTree struct {

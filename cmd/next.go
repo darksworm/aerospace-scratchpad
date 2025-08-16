@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
+	"github.com/ilmars/aerospace-sticky/internal/aerospace"
+	"github.com/ilmars/aerospace-sticky/internal/stderr"
 	"github.com/spf13/cobra"
 )
 

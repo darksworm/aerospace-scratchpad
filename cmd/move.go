@@ -11,9 +11,10 @@ import (
 	"strings"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
+	"github.com/ilmars/aerospace-sticky/internal/aerospace"
+	"github.com/ilmars/aerospace-sticky/internal/constants"
+	"github.com/ilmars/aerospace-sticky/internal/logger"
+	"github.com/ilmars/aerospace-sticky/internal/stderr"
 	"github.com/spf13/cobra"
 )
 
@@ -21,17 +22,37 @@ import (
 func MoveCmd(
 	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
+	var workspace string
+	var fullscreen bool
+	
 	moveCmd := &cobra.Command{
 		Use:   "move <pattern>",
-		Short: "Move a window to scratchpad",
-		Long: `Move a window to the scratchpad.
+		Short: "Move a window to scratchpad or specified workspace",
+		Long: `Move a window to the scratchpad or a specified workspace.
 
-This command moves a window to the scratchpad using a regex to match the app name.
+This command moves a window to the scratchpad (or custom workspace) using a regex to match the app name.
 If no pattern is provided, it moves the currently focused window.
+
+Examples:
+  # Move to default scratchpad
+  aerospace-scratchpad move Terminal
+  
+  # Move to custom workspace and make fullscreen
+  aerospace-scratchpad move --workspace "dev" --fullscreen Terminal
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logger.GetDefaultLogger()
-			logger.LogDebug("MOVE: start command", "args", args)
+			logger.LogDebug("MOVE: start command", "args", args, "workspace", workspace, "fullscreen", fullscreen)
+			
+			// Create extended client for additional functionality
+			extendedClient := aerospace.NewExtendedAeroSpaceClient(aerospaceClient)
+			
+			// Determine target workspace
+			targetWorkspace := workspace
+			if targetWorkspace == "" {
+				targetWorkspace = constants.DefaultScratchpadWorkspaceName
+			}
+			
 			var windowNamePattern string
 			if len(args) == 0 {
 				windowNamePattern = ""
@@ -90,16 +111,16 @@ If no pattern is provided, it moves the currently focused window.
 					continue
 				}
 
-				// Move the window to the scratchpad
-				fmt.Printf("Moving window %+v to scratchpad\n", window)
+				// Move the window to the target workspace
+				fmt.Printf("Moving window %+v to workspace %s\n", window, targetWorkspace)
 				err := aerospaceClient.MoveWindowToWorkspace(
 					window.WindowID,
-					constants.DefaultScratchpadWorkspaceName,
+					targetWorkspace,
 				)
 				logger.LogDebug(
-					"MOVE: moving window to scratchpad",
+					"MOVE: moving window to workspace",
 					"window", window,
-					"workspace", constants.DefaultScratchpadWorkspaceName,
+					"workspace", targetWorkspace,
 					"error", err,
 				)
 				if err != nil {
@@ -107,27 +128,54 @@ If no pattern is provided, it moves the currently focused window.
 						continue
 					}
 
-					stderr.Println("Error: unable to move window '%+v' to scratchpad", window)
+					stderr.Println("Error: unable to move window '%+v' to workspace %s", window, targetWorkspace)
 					// exit loop
 					return
 				}
 
-				err = aerospaceClient.SetLayout(
-					window.WindowID,
-					"floating",
-				)
-				logger.LogDebug(
-					"MOVE: setting layout to floating",
-					"window", window,
-					"layout", "floating",
-					"error", err,
-				)
-				if err != nil {
-					fmt.Printf(
-						"warn: unable to set layout for window '%+v' to floating\n%s",
-						window,
-						err,
+				// Apply fullscreen by default for specific workspaces, floating for default scratchpad
+				shouldUseFullscreen := fullscreen || (targetWorkspace != constants.DefaultScratchpadWorkspaceName)
+				
+				if shouldUseFullscreen {
+					err = extendedClient.SetFullscreen(window.WindowID, true)
+					logger.LogDebug(
+						"MOVE: setting window to fullscreen",
+						"window", window,
+						"workspace", targetWorkspace,
+						"reason", func() string {
+							if fullscreen {
+								return "explicit fullscreen flag"
+							}
+							return "default for specific workspace"
+						}(),
+						"error", err,
 					)
+					if err != nil {
+						fmt.Printf(
+							"warn: unable to set fullscreen for window '%+v'\n%s",
+							window,
+							err,
+						)
+					}
+				} else {
+					// Set to floating layout for default scratchpad workspace
+					err = aerospaceClient.SetLayout(
+						window.WindowID,
+						"floating",
+					)
+					logger.LogDebug(
+						"MOVE: setting layout to floating",
+						"window", window,
+						"layout", "floating",
+						"error", err,
+					)
+					if err != nil {
+						fmt.Printf(
+							"warn: unable to set layout for window '%+v' to floating\n%s",
+							window,
+							err,
+						)
+					}
 				}
 
 				movedCount++
@@ -147,6 +195,10 @@ If no pattern is provided, it moves the currently focused window.
 			}
 		},
 	}
+
+	// Add flags
+	moveCmd.Flags().StringVarP(&workspace, "workspace", "w", "", "Target workspace (defaults to .scratchpad)")
+	moveCmd.Flags().BoolVarP(&fullscreen, "fullscreen", "f", false, "Make window fullscreen in target workspace")
 
 	return moveCmd
 }

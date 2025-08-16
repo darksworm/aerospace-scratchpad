@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
+	"github.com/ilmars/aerospace-sticky/internal/constants"
 )
 
 var defaultLogger Logger

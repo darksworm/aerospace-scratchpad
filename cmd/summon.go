@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/cli"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
+	"github.com/ilmars/aerospace-sticky/internal/cli"
+	"github.com/ilmars/aerospace-sticky/internal/stderr"
 	"github.com/spf13/cobra"
 )
 

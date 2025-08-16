@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
+	"github.com/ilmars/aerospace-sticky/internal/logger"
 )
 
 // This package contains functions to print errors in a consistent way.

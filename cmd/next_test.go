@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/mocks/aerospacecli"
-	"github.com/cristianoliveira/aerospace-scratchpad/internal/testutils"
+	"github.com/ilmars/aerospace-sticky/internal/constants"
+	"github.com/ilmars/aerospace-sticky/internal/mocks/aerospacecli"
+	"github.com/ilmars/aerospace-sticky/internal/testutils"
 	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 )
