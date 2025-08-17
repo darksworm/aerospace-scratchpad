@@ -133,21 +133,13 @@ Examples:
 					return
 				}
 
-				// Apply fullscreen by default for specific workspaces, floating for default scratchpad
-				shouldUseFullscreen := fullscreen || (targetWorkspace != constants.DefaultScratchpadWorkspaceName)
-				
-				if shouldUseFullscreen {
+				// Apply fullscreen only if explicitly requested via flag
+				if fullscreen {
 					err = extendedClient.SetFullscreen(window.WindowID, true)
 					logger.LogDebug(
-						"MOVE: setting window to fullscreen",
+						"MOVE: setting window to fullscreen (explicit flag)",
 						"window", window,
 						"workspace", targetWorkspace,
-						"reason", func() string {
-							if fullscreen {
-								return "explicit fullscreen flag"
-							}
-							return "default for specific workspace"
-						}(),
 						"error", err,
 					)
 					if err != nil {
@@ -158,7 +150,7 @@ Examples:
 						)
 					}
 				} else {
-					// Set to floating layout for default scratchpad workspace
+					// Default to floating layout for all workspaces
 					err = aerospaceClient.SetLayout(
 						window.WindowID,
 						"floating",
@@ -166,6 +158,7 @@ Examples:
 					logger.LogDebug(
 						"MOVE: setting layout to floating",
 						"window", window,
+						"workspace", targetWorkspace,
 						"layout", "floating",
 						"error", err,
 					)

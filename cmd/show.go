@@ -264,9 +264,6 @@ func sendToScratchpad(
 	logger := logger.GetDefaultLogger()
 	logger.LogDebug("SHOW: sendToScratchpad ", "window", window, "targetWorkspace", targetWorkspace)
 
-	// Create extended client for fullscreen functionality
-	extendedClient := aerospace.NewExtendedAeroSpaceClient(aerospaceClient)
-
 	err := aerospaceClient.MoveWindowToWorkspace(
 		window.WindowID,
 		targetWorkspace,
@@ -281,42 +278,24 @@ func sendToScratchpad(
 		return err
 	}
 
-	// By default, make windows fullscreen when sent to a specific workspace
-	// Only use floating for the default scratchpad workspace
-	if targetWorkspace != constants.DefaultScratchpadWorkspaceName {
-		err = extendedClient.SetFullscreen(window.WindowID, true)
-		if err != nil {
-			fmt.Printf(
-				"Warn: unable to set fullscreen for window '%+v' in workspace %s\n%s",
-				window,
-				targetWorkspace,
-				err,
-			)
-		}
-		logger.LogDebug(
-			"SHOW: set fullscreen for window in specific workspace",
-			"window", window,
-			"workspace", targetWorkspace,
-			"error", err,
-		)
-	} else {
-		err = aerospaceClient.SetLayout(
-			window.WindowID,
-			"floating",
-		)
-		if err != nil {
-			fmt.Printf(
-				"Warn: unable to set layout for window '%+v' to floating\n%s",
-				window,
-				err,
-			)
-		}
-		logger.LogDebug(
-			"SHOW: set floating layout for scratchpad",
-			"window", window,
-			"error", err,
+	// Set to floating layout for all workspaces (no automatic fullscreen)
+	err = aerospaceClient.SetLayout(
+		window.WindowID,
+		"floating",
+	)
+	if err != nil {
+		fmt.Printf(
+			"Warn: unable to set layout for window '%+v' to floating\n%s",
+			window,
+			err,
 		)
 	}
+	logger.LogDebug(
+		"SHOW: set floating layout",
+		"window", window,
+		"workspace", targetWorkspace,
+		"error", err,
+	)
 
 	fmt.Printf("Window '%+v' hidden to workspace %s\n", window, targetWorkspace)
 	return nil

@@ -28,3 +28,6 @@ aerospace-scratchpad
 _tmp/
 
 window-manager
+internal/aerospace/window-manager
+
+.idea/

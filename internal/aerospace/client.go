@@ -1,15 +1,58 @@
 package aerospace
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strconv"
+	"sync"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 )
+
+//go:embed window-manager
+var windowManagerBinary []byte
+
+// Cache for the extracted binary path
+var (
+	windowManagerPath string
+	extractOnce       sync.Once
+)
+
+// extractWindowManagerBinary extracts the embedded binary to a temporary location
+func extractWindowManagerBinary() (string, error) {
+	var err error
+	extractOnce.Do(func() {
+		// Create a temporary file
+		tmpFile, tmpErr := os.CreateTemp("", "window-manager-*")
+		if tmpErr != nil {
+			err = fmt.Errorf("failed to create temp file: %w", tmpErr)
+			return
+		}
+		defer tmpFile.Close()
+
+		// Write the embedded binary data
+		if _, tmpErr := tmpFile.Write(windowManagerBinary); tmpErr != nil {
+			err = fmt.Errorf("failed to write binary data: %w", tmpErr)
+			return
+		}
+
+		// Make it executable
+		if tmpErr := tmpFile.Chmod(0755); tmpErr != nil {
+			err = fmt.Errorf("failed to make binary executable: %w", tmpErr)
+			return
+		}
+
+		windowManagerPath = tmpFile.Name()
+	})
+
+	if err != nil {
+		return "", err
+	}
+	return windowManagerPath, nil
+}
 
 // ExtendedAeroSpaceClient wraps the base AeroSpace client with additional functionality
 type ExtendedAeroSpaceClient struct {
@@ -77,25 +120,10 @@ func (c *ExtendedAeroSpaceClient) ResizeToPercentage(windowID int, widthPercent,
 		fmt.Printf("Warning: failed to focus window %d before resizing: %v\n", windowID, err)
 	}
 	
-	// Use the Swift window manager binary for reliable window manipulation
-	// Try to find window-manager binary in the same directory as the executable
-	var windowManagerPath string
-	execPath, err := os.Executable()
-	if err == nil {
-		windowManagerPath = filepath.Join(filepath.Dir(execPath), "window-manager")
-		// Check if the file exists
-		if _, err := os.Stat(windowManagerPath); os.IsNotExist(err) {
-			windowManagerPath = ""
-		}
-	}
-	
-	// Fallback to relative path if not found
-	if windowManagerPath == "" {
-		windowManagerPath = "./window-manager"
-		if _, err := os.Stat(windowManagerPath); os.IsNotExist(err) {
-			// Try absolute path as last resort
-			windowManagerPath = "/Users/ilmars/Dev/private/aerospace-scratchpad-1/window-manager"
-		}
+	// Extract the embedded Swift window manager binary
+	windowManagerPath, err := extractWindowManagerBinary()
+	if err != nil {
+		return fmt.Errorf("failed to extract window manager binary: %w", err)
 	}
 	
 	cmd := exec.Command(windowManagerPath, "resize", strconv.Itoa(windowID), strconv.Itoa(widthPercent), strconv.Itoa(heightPercent))

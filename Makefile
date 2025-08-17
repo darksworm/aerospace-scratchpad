@@ -1,71 +1,80 @@
-.PHONY: help
-help: ## Lists the available commands. Add a comment with '##' to describe a command.
-	@grep -E '^[a-zA-Z_-].+:.*?## .*$$' $(MAKEFILE_LIST)\
-		| sort\
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+# Makefile for aerospace-scratchpad
 
+.PHONY: all build clean swift go embed test help dev install
 
-.PHONY: run
-run: ## Run the cli
-	@echo "Running the CLI..."
-	@go run main.go
+# Default target
+all: build
 
-.PHONY: test
-test: ## Run the tests
-	@echo "Running the tests..."
-	@go test ./... -v
+# Build the complete project
+build: embed go
 
-.PHONY: setup-ci
-setup-ci: ## Install dependencies for CI
-	@echo "Setting up CI dependencies..."
-	@if ! command -v golangci-lint &> /dev/null; then \
-		echo "golangci-lint could not be found, installing..."; \
-		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
-	else \
-		echo "golangci-lint is already installed"; \
-	fi
+# Build Swift window manager
+swift:
+	@echo "Building Swift window manager..."
+	cd swift-window-manager && swift build -c release
 
-.PHONY: fmt
-fmt: setup-ci ## Format the code
-	@echo "Formatting the code..."
-	@gofmt -s -w .
-	@golangci-lint run --fix
+# Embed the Swift binary for Go compilation
+embed: swift
+	@echo "Copying window manager binary for embedding..."
+	cp swift-window-manager/.build/release/window-manager internal/aerospace/window-manager
 
-.PHONY: lint
-lint: setup-ci ## Run the linter
-	@echo "Running the linter..."
-	@golangci-lint run 
+# Build Go binary with embedded Swift window manager
+go: embed
+	@echo "Building Go binary with embedded Swift window manager..."
+	go build -o aerospace-scratchpad
+	@echo "Build complete! Size: $$(ls -lh aerospace-scratchpad | awk '{print $$5}')"
 
-.PHONY: update-snap-all
-update-snap-all: ## Update all the snaps
-	@echo "Updating the snaps..."
-	UPDATE_SNAPS=true go test ./... -v
+# Run tests
+test:
+	@echo "Running Go tests..."
+	go test ./...
 
-.PHONY: install
-install: ## Install the CLI
-	@echo "Installing the CLI..."
-	@go install ./main.go
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts..."
+	rm -f aerospace-scratchpad
+	rm -f internal/aerospace/window-manager
+	rm -rf swift-window-manager/.build
 
-.PHONY: nix-build-source
-nix-build-source: ## Build the source code using Nix
-	@echo "Building the source code using Nix..."
-	@nix build .#source
+# Development build (faster, debug mode)
+dev:
+	@echo "Building Swift window manager (debug)..."
+	cd swift-window-manager && swift build
+	@echo "Copying debug binary for embedding..."
+	cp swift-window-manager/.build/debug/window-manager internal/aerospace/window-manager
+	@echo "Building Go binary..."
+	go build -o aerospace-scratchpad
+	@echo "Development build complete!"
 
-.PHONY: nix-build-nightly
-nix-build-nightly: ## Build the nightly using Nix
-	@echo "Building the nightly using Nix..."
-	@nix build .#nightly
+# Install to a local bin directory
+install: build
+	@echo "Installing to ~/bin..."
+	mkdir -p ~/bin
+	cp aerospace-scratchpad ~/bin/
+	@echo "Installed to ~/bin/aerospace-scratchpad"
 
-.PHONY: nix-build
-nix-build: ## Build the cli using Nix
-	@echo "Building the cli using Nix..."
-	@nix build .#default
+# Build for release (optimized)
+release: embed
+	@echo "Building optimized release binary..."
+	go build -ldflags="-s -w" -o aerospace-scratchpad
+	@echo "Release build complete! Size: $$(ls -lh aerospace-scratchpad | awk '{print $$5}')"
 
-.PHONY: nix-build-all
-nix-build-all: nix-build-source nix-build-nightly nix-build ## Build all using Nix
-	@echo "Building all using Nix..."
+# Run linting
+lint:
+	golangci-lint run
 
-.PHONY: git-hooks-pre-push
-git-hooks-pre-push: ## Set up git hooks and run
-	echo "Pre-push git hooks set up"
-	bash scripts/git-hooks/pre-push
+# Show help
+help:
+	@echo "Available targets:"
+	@echo "  all      - Build everything (default)"
+	@echo "  build    - Build the complete project"
+	@echo "  swift    - Build only the Swift window manager"
+	@echo "  go       - Build only the Go binary (requires embed)"
+	@echo "  embed    - Copy Swift binary for Go embedding"
+	@echo "  dev      - Development build (debug mode)"
+	@echo "  test     - Run tests"
+	@echo "  clean    - Clean build artifacts"
+	@echo "  install  - Install to ~/bin"
+	@echo "  release  - Build optimized release binary"
+	@echo "  lint     - Run linting"
+	@echo "  help     - Show this help message"
