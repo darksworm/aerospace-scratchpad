@@ -131,15 +131,6 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 				}
 			}
 
-			if len(windowsInFocusedWorkspace) == 0 && len(windowsOutsideView) == 0 {
-				if len(filterFlags) > 0 {
-					stderr.Println("Error: no windows matched the pattern and filters")
-				} else {
-					stderr.Println("Error: no windows matched the pattern '%s'", windowNamePattern)
-				}
-				return
-			}
-
 			// NOTE: To avoid the ping pong of windows, so priority is
 			// for bringing windows to the focused workspace
 			if len(windowsOutsideView) > 0 {
