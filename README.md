@@ -67,10 +67,16 @@ cmd-ctrl-2 = [
 # Bring windows one by one to current workspace
 ctrl-minus = "exec-and-forget aerospace-scratchpad next"
 
+# A terminal scratchpad a la Guake
+ctrl-cmd-t = ''
+    exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-scratchpad' \
+                 || alacritty -t 'terminal-scratchpad'
+'';
+
 # If you use more than one monitor make sure to assign the `.scratchpad` workspace
 # to a non-main monitor for a better UX
 [workspace-to-monitor-force-assignment]
-   ".scratchpad" = ['secondary', 'main']
+".scratchpad" = ['secondary', 'main']
 ```
 
 ## Advanced Usage
