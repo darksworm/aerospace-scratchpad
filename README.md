@@ -58,20 +58,19 @@ To find the correct `pattern` run `aerospace list-windows --all --json | grep ap
 cmd-ctrl-1 = "exec-and-forget aerospace-scratchpad show Finder"
 
 # Or using summon instead
-cmd-ctrl-2 = [
-    """exec-and-forget aerospace-scratchpad summon Finder || \
-                        aerospace-scratchpad move Finder
-    """
-]
+cmd-ctrl-2 = """
+exec-and-forget aerospace-scratchpad summon Finder || \
+                aerospace-scratchpad move Finder
+"""
 
 # Bring windows one by one to current workspace
 ctrl-minus = "exec-and-forget aerospace-scratchpad next"
 
 # A terminal scratchpad a la Guake
-ctrl-cmd-t = ''
-    exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-scratchpad' \
-                 || alacritty -t 'terminal-scratchpad'
-'';
+ctrl-cmd-t = """
+exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-scratchpad' \
+             || alacritty -t 'terminal-scratchpad'
+"""
 
 # If you use more than one monitor make sure to assign the `.scratchpad` workspace
 # to a non-main monitor for a better UX
