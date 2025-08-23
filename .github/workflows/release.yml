@@ -68,7 +68,6 @@ jobs:
           goarch: ${{ matrix.goarch }}
           binary_name: aerospace-scratchpad
           project_path: ./
-          ldflags: "-X github.com/cristianoliveira/aerospace-scratchpad/cmd.VERSION=${{ github.event.release.tag_name }}'"
           extra_files: LICENSE README.md
           compress_assets: true
           overwrite: true
