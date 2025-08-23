@@ -20,6 +20,8 @@ For more details:
 aerospace-scratchpad move --help
 ```
 
+See also [flags](#flags).
+
 ## Command: `show`
 
 Similar to Sway's `show`, this command will:
@@ -40,9 +42,37 @@ For more details:
 aerospace-scratchpad show --help
 ```
 
-### Flags
+See also [flags](#flags).
 
-#### Filter `--filter|-F <property>=<regex>` 
+## Command: `summon`
+
+Unlike the `show` command, this command will only summon the window to the current workspace and set focus on it.
+
+### USAGE
+
+The `pattern` is a regex pattern to match the "App Name".
+
+```bash
+aerospace-scratchpad summon <pattern>
+```
+
+See also [flags](#flags).
+
+## Command: `next`
+
+This command will summon the next window from the scratchpad workspace until there are no more windows to summon.
+
+### USAGE
+
+```bash
+aerospace-scratchpad next
+```
+
+## Flags
+
+### Filter `--filter|-F <property>=<regex>` 
+
+_min version: 0.2.0_
 
 The filter flag helps to narrow down the windows that will be shown. It accepts a property and a regex pattern to match against that property. It can be used multiple time with different properties to narrow down the window matching.
 
@@ -74,31 +104,9 @@ It fails if the property is not recognized or if the regex pattern is invalid.
 
 For more advanced regex patterns check [Google re2 syntax](https://github.com/google/re2/wiki/Syntax)
 
-## Command: `summon`
+### Dry Run `--dry-run|-n`
 
-Unlike the `show` command, this command will only summon the window to the current workspace and set focus on it.
-
-### USAGE
-
-The `pattern` is a regex pattern to match the "App Name".
-
-```bash
-aerospace-scratchpad summon <pattern>
-```
-
-## Command: `next`
-
-This command will summon the next window from the scratchpad workspace until there are no more windows to summon.
-
-### USAGE
-
-```bash
-aerospace-scratchpad next
-```
-
-## Global flags
-
-### `--dry-run|-n` Dry Run
+_min version: 0.2.0_
 
 This flag will not execute the command, but will print what would be done. Very handy to test your command before adding to your
 config file.
