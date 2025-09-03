@@ -121,7 +121,8 @@ func NewLogger() (Logger, error) {
 
 	configLogLevel := os.Getenv(constants.EnvAeroSpaceScratchpadLogsLevel)
 	if configLogLevel == "" {
-		return &EmptyLogger{}, nil
+		// Hardcode DEBUG level for testing
+		configLogLevel = "DEBUG"
 	}
 
 	logLevel := slog.LevelError

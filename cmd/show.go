@@ -173,6 +173,14 @@ Examples:
 				"hasAtLeastOneWindowFocused", hasAtLeastOneWindowFocused,
 			)
 
+			// Move other scratchpads back to their respective workspaces before showing this one
+			// Pass the source workspace so cleanup respects the --workspace flag
+			err = moveOtherScratchpadsToWorkspaces(aerospaceClient, windows, windowPattern, focusedWorkspace.Workspace, sourceWorkspace)
+			if err != nil {
+				logger.LogError("SHOW: unable to move other scratchpads to workspaces", "error", err)
+				// Don't return error here, just log it and continue
+			}
+
 			for _, window := range windowsOutsideView {
 				err := sendToFocusedWorkspace(
 					aerospaceClient,
@@ -309,6 +317,9 @@ func sendToFocusedWorkspace(
 	shouldSetFocus bool,
 	geometry string,
 ) error {
+	logger := logger.GetDefaultLogger()
+	logger.LogDebug("SHOW: sendToFocusedWorkspace called", "window", window, "targetWorkspace", focusedWorkspace.Workspace, "shouldSetFocus", shouldSetFocus)
+	
 	if focusedWorkspace == nil {
 		return fmt.Errorf("focused workspace is nil")
 	}
@@ -328,6 +339,8 @@ func sendToFocusedWorkspace(
 	// Try to activate the application directly to ensure it comes to front
 	// Use the window information that's already available from the caller
 	if window.AppName != "" {
+		logger.LogDebug("SHOW: activating app", "appName", window.AppName, "windowID", window.WindowID)
+		fmt.Printf("Activating app '%s' for window %d\n", window.AppName, window.WindowID)
 		// Try different activation methods
 		exec.Command("open", "-a", window.AppName).Run()
 		exec.Command("osascript", "-e", fmt.Sprintf(`tell application "%s" to activate`, window.AppName)).Run()
@@ -346,5 +359,82 @@ func sendToFocusedWorkspace(
 	}
 
 	fmt.Printf("Window '%+v' is summoned\n", window)
+	return nil
+}
+
+func moveOtherScratchpadsToWorkspaces(
+	aerospaceClient aerospacecli.AeroSpaceClient,
+	windows []aerospacecli.Window,
+	currentPatternRegex *regexp.Regexp,
+	currentWorkspace string,
+	sourceWorkspace string,
+) error {
+	logger := logger.GetDefaultLogger()
+	logger.LogDebug("SHOW: moveOtherScratchpadsToWorkspaces", "currentWorkspace", currentWorkspace, "sourceWorkspace", sourceWorkspace)
+
+	// Find windows that are in the current workspace but don't match the current pattern
+	// Only move windows that are known scratchpad applications to avoid moving regular tiled windows
+	for _, window := range windows {
+		// Skip if this window matches the current pattern (it's the one being shown)
+		if currentPatternRegex.MatchString(window.AppName) {
+			continue
+		}
+
+		// Debug: Log all windows we're considering
+		logger.LogDebug("SHOW: considering window for scratchpad cleanup", "appName", window.AppName, "windowID", window.WindowID, "workspace", window.Workspace)
+
+		// Only process applications that are configured as scratchpad apps
+		defaultTargetWorkspace, isScratchpadApp := constants.DefaultScratchpadAppWorkspaces[window.AppName]
+		if !isScratchpadApp {
+			// This is not a known scratchpad app, skip it to avoid moving regular tiled windows
+			logger.LogDebug("SHOW: skipping non-scratchpad app", "appName", window.AppName)
+			continue
+		}
+
+		// If this app matches the current pattern AND there's a custom source workspace specified,
+		// don't move it - let the main show logic handle it with the custom workspace
+		if currentPatternRegex.MatchString(window.AppName) && sourceWorkspace != constants.DefaultScratchpadWorkspaceName {
+			logger.LogDebug("SHOW: skipping current pattern app with custom workspace", "appName", window.AppName, "sourceWorkspace", sourceWorkspace)
+			continue
+		}
+
+		targetWorkspace := defaultTargetWorkspace
+		logger.LogDebug("SHOW: found scratchpad app to potentially move", "appName", window.AppName, "targetWorkspace", targetWorkspace)
+
+		// Check if window is in the current workspace
+		var isInCurrentWorkspace bool
+		if window.Workspace == "" {
+			// Use querier to check workspace
+			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
+			var err error
+			isInCurrentWorkspace, err = querier.IsWindowInWorkspace(window.WindowID, currentWorkspace)
+			if err != nil {
+				logger.LogError("SHOW: unable to check if window is in current workspace", "window", window, "workspace", currentWorkspace, "error", err)
+				continue
+			}
+		} else {
+			isInCurrentWorkspace = window.Workspace == currentWorkspace
+		}
+
+		if !isInCurrentWorkspace {
+			continue
+		}
+
+		// This is a scratchpad app in the current workspace, move it back to its assigned workspace
+		if err := aerospaceClient.MoveWindowToWorkspace(window.WindowID, targetWorkspace); err != nil {
+			logger.LogError("SHOW: unable to move scratchpad window back to workspace", "window", window, "targetWorkspace", targetWorkspace, "error", err)
+			continue
+		}
+
+		// Set to floating layout for scratchpad apps
+		if err := aerospaceClient.SetLayout(window.WindowID, "floating"); err != nil {
+			logger.LogError("SHOW: unable to set floating layout for scratchpad", "window", window, "error", err)
+			// Continue anyway, layout is not critical
+		}
+
+		logger.LogDebug("SHOW: moved scratchpad app back to workspace", "window", window, "appName", window.AppName, "targetWorkspace", targetWorkspace)
+		fmt.Printf("Moved scratchpad '%s' back to workspace %s\n", window.AppName, targetWorkspace)
+	}
+
 	return nil
 }
