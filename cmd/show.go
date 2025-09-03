@@ -294,6 +294,13 @@ func sendToScratchpad(
 	logger := logger.GetDefaultLogger()
 	logger.LogDebug("SHOW: sendToScratchpad ", "window", window, "targetWorkspace", targetWorkspace)
 
+	// Unfocus this window before moving it to prevent workspace switching flicker
+	// Focus the next available window in the current workspace first
+	if err := unfocusWindowBeforeMove(aerospaceClient, window); err != nil {
+		logger.LogDebug("SHOW: unable to unfocus window before move", "error", err)
+		// Don't fail the operation if unfocusing fails, just log it
+	}
+
 	err := aerospaceClient.MoveWindowToWorkspace(
 		window.WindowID,
 		targetWorkspace,
@@ -452,4 +459,48 @@ func moveOtherScratchpadsToWorkspaces(
 	}
 
 	return nil
+}
+
+// unfocusWindowBeforeMove focuses another window before moving the current one
+// This prevents AeroSpace from following the window to its destination workspace
+func unfocusWindowBeforeMove(aerospaceClient aerospacecli.AeroSpaceClient, windowToMove aerospacecli.Window) error {
+	logger := logger.GetDefaultLogger()
+	
+	// Get focused workspace to find other windows
+	focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
+	if err != nil {
+		return fmt.Errorf("unable to get focused workspace: %w", err)
+	}
+	
+	// Get all windows in the current workspace
+	allWindows, err := aerospaceClient.GetAllWindows()
+	if err != nil {
+		return fmt.Errorf("unable to get all windows: %w", err)
+	}
+	
+	// Find another window in the same workspace to focus
+	for _, window := range allWindows {
+		// Skip the window we're about to move
+		if window.WindowID == windowToMove.WindowID {
+			continue
+		}
+		
+		// Skip if not in the current workspace
+		if window.Workspace != focusedWorkspace.Workspace {
+			continue
+		}
+		
+		// Focus this window instead
+		logger.LogDebug("SHOW: unfocusing by switching focus", "fromWindow", windowToMove.WindowID, "toWindow", window.WindowID)
+		if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
+			logger.LogDebug("SHOW: failed to focus alternate window", "window", window.WindowID, "error", err)
+			continue // Try next window
+		}
+		
+		logger.LogDebug("SHOW: successfully unfocused window before move", "movedWindow", windowToMove.WindowID, "newFocusedWindow", window.WindowID)
+		return nil
+	}
+	
+	logger.LogDebug("SHOW: no alternate window found to focus, proceeding with move")
+	return nil // Not an error - just no other windows to focus
 }
