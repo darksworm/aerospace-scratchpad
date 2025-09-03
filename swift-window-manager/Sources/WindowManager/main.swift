@@ -46,7 +46,7 @@ class WindowManager {
         return nil
     }
     
-    func resizeAndPositionWindow(windowID: Int, widthPercent: Int, heightPercent: Int) -> Bool {
+    func resizeAndPositionWindow(windowID: Int, widthPercent: Int, heightPercent: Int, position: String = "center") -> Bool {
         guard let windowInfo = findWindowByID(windowID) else {
             print("Error: Window with ID \(windowID) not found")
             return false
@@ -73,13 +73,16 @@ class WindowManager {
         let targetWidth = safeFrame.width * CGFloat(widthPercent) / 100.0
         let targetHeight = safeFrame.height * CGFloat(heightPercent) / 100.0
         
-        // Calculate centered position within the safe area (below notch)
-        // This centers the window in the available space, not the full screen
-        let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
-        let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+        // Calculate position based on the position parameter
+        let (targetX, targetY) = calculatePosition(
+            position: position,
+            safeFrame: safeFrame,
+            targetWidth: targetWidth,
+            targetHeight: targetHeight
+        )
         
         print("Target size: \(targetWidth) x \(targetHeight)")
-        print("Target position: (\(centerX), \(centerY)) - centered in safe area")
+        print("Target position: (\(targetX), \(targetY)) - position: \(position)")
         print("Safe area dimensions: \(safeFrame.width) x \(safeFrame.height)")
         print("Safe area origin: (\(safeFrame.origin.x), \(safeFrame.origin.y))")
         
@@ -131,7 +134,7 @@ class WindowManager {
         }
         
         // Set new position and size
-        var newPosition = CGPoint(x: centerX, y: centerY)
+        var newPosition = CGPoint(x: targetX, y: targetY)
         var newSize = CGSize(width: targetWidth, height: targetHeight)
         
         let positionValue = AXValueCreate(.cgPoint, &newPosition)!
@@ -150,12 +153,52 @@ class WindowManager {
         
         return positionResult == AXError.success && sizeResult == AXError.success
     }
+    
+    // Calculate window position based on position parameter
+    func calculatePosition(position: String, safeFrame: CGRect, targetWidth: CGFloat, targetHeight: CGFloat) -> (CGFloat, CGFloat) {
+        switch position.lowercased() {
+        case "center":
+            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
+            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            return (centerX, centerY)
+            
+        case "top":
+            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
+            let topY = safeFrame.origin.y + 20 // Small margin from top
+            return (centerX, topY)
+            
+        case "bottom":
+            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
+            let bottomY = safeFrame.origin.y + safeFrame.height - targetHeight - 20 // Small margin from bottom
+            return (centerX, bottomY)
+            
+        case "left":
+            let leftX = safeFrame.origin.x + 20 // Small margin from left
+            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            return (leftX, centerY)
+            
+        case "right":
+            let rightX = safeFrame.origin.x + safeFrame.width - targetWidth - 20 // Small margin from right
+            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            return (rightX, centerY)
+            
+        default:
+            // Default to center for unknown positions
+            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
+            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            return (centerX, centerY)
+        }
+    }
 }
 
 // Command line interface
 func printUsage() {
-    print("Usage: window-manager resize <window-id> <width-percent> <height-percent>")
-    print("Example: window-manager resize 12345 60 90")
+    print("Usage: window-manager resize <window-id> <width-percent> <height-percent> [position]")
+    print("Position options: center (default), top, bottom, left, right")
+    print("Examples:")
+    print("  window-manager resize 12345 60 90")
+    print("  window-manager resize 12345 60 90 bottom")
+    print("  window-manager resize 12345 80 70 top")
 }
 
 func main() {
@@ -170,7 +213,7 @@ func main() {
     
     switch command {
     case "resize":
-        guard args.count == 5 else {
+        guard args.count >= 5 && args.count <= 6 else {
             printUsage()
             exit(1)
         }
@@ -188,11 +231,15 @@ func main() {
             exit(1)
         }
         
+        // Get position parameter if provided, default to "center"
+        let position = args.count == 6 ? args[5] : "center"
+        
         let windowManager = WindowManager()
         let success = windowManager.resizeAndPositionWindow(
             windowID: windowID,
             widthPercent: widthPercent,
-            heightPercent: heightPercent
+            heightPercent: heightPercent,
+            position: position
         )
         
         if success {

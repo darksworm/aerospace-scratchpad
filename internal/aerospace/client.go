@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
@@ -115,6 +116,11 @@ func (c *ExtendedAeroSpaceClient) GetScreenDimensions() (int, int, error) {
 
 // ResizeToPercentage resizes a window to specific percentage of screen using Swift window manager
 func (c *ExtendedAeroSpaceClient) ResizeToPercentage(windowID int, widthPercent, heightPercent int) error {
+	return c.ResizeToPercentageWithPosition(windowID, widthPercent, heightPercent, "center")
+}
+
+// ResizeToPercentageWithPosition resizes and positions a window using Swift window manager
+func (c *ExtendedAeroSpaceClient) ResizeToPercentageWithPosition(windowID int, widthPercent, heightPercent int, position string) error {
 	// Focus the window first to ensure it's active
 	if err := c.SetFocusByWindowID(windowID); err != nil {
 		fmt.Printf("Warning: failed to focus window %d before resizing: %v\n", windowID, err)
@@ -126,7 +132,7 @@ func (c *ExtendedAeroSpaceClient) ResizeToPercentage(windowID int, widthPercent,
 		return fmt.Errorf("failed to extract window manager binary: %w", err)
 	}
 	
-	cmd := exec.Command(windowManagerPath, "resize", strconv.Itoa(windowID), strconv.Itoa(widthPercent), strconv.Itoa(heightPercent))
+	cmd := exec.Command(windowManagerPath, "resize", strconv.Itoa(windowID), strconv.Itoa(widthPercent), strconv.Itoa(heightPercent), position)
 	output, err := cmd.CombinedOutput()
 	
 	if err != nil {
@@ -153,14 +159,26 @@ func (c *ExtendedAeroSpaceClient) CenterWindow(windowID int) error {
 type GeometrySpec struct {
 	WidthPercent  int
 	HeightPercent int
+	Position      string
 }
 
-// ParseGeometry parses geometry string in format "60%x90%"
+// ParseGeometry parses geometry string in format "60%x90%" or "60%x90%@position"
 func ParseGeometry(geometry string) (*GeometrySpec, error) {
+	// Split geometry and position if @ is present
+	parts := strings.Split(geometry, "@")
+	geometryPart := parts[0]
+	position := "center" // default position
+	
+	if len(parts) == 2 {
+		position = strings.TrimSpace(parts[1])
+	} else if len(parts) > 2 {
+		return nil, fmt.Errorf("invalid geometry format: %s, expected format: 60%%x90%%@position", geometry)
+	}
+	
 	re := regexp.MustCompile(`^(\d+)%x(\d+)%$`)
-	matches := re.FindStringSubmatch(geometry)
+	matches := re.FindStringSubmatch(geometryPart)
 	if len(matches) != 3 {
-		return nil, fmt.Errorf("invalid geometry format: %s, expected format: 60%%x90%%", geometry)
+		return nil, fmt.Errorf("invalid geometry format: %s, expected format: 60%%x90%%[@position]", geometry)
 	}
 	
 	width, err := strconv.Atoi(matches[1])
@@ -173,9 +191,23 @@ func ParseGeometry(geometry string) (*GeometrySpec, error) {
 		return nil, fmt.Errorf("invalid height percentage: %s", matches[2])
 	}
 	
+	// Validate position
+	validPositions := []string{"center", "top", "bottom", "left", "right"}
+	isValidPosition := false
+	for _, validPos := range validPositions {
+		if strings.ToLower(position) == validPos {
+			isValidPosition = true
+			break
+		}
+	}
+	if !isValidPosition {
+		return nil, fmt.Errorf("invalid position: %s, valid positions: %s", position, strings.Join(validPositions, ", "))
+	}
+	
 	return &GeometrySpec{
 		WidthPercent:  width,
 		HeightPercent: height,
+		Position:      strings.ToLower(position),
 	}, nil
 }
 
@@ -192,9 +224,9 @@ func (c *ExtendedAeroSpaceClient) ApplyGeometry(windowID int, geometry string) e
 		fmt.Printf("Info: Could not set floating layout for window %d, continuing anyway\n", windowID)
 	}
 	
-	// Resize and center the window using percentage-based sizing
+	// Resize and position the window using percentage-based sizing
 	// This should work regardless of floating mode
-	if err := c.ResizeToPercentage(windowID, spec.WidthPercent, spec.HeightPercent); err != nil {
+	if err := c.ResizeToPercentageWithPosition(windowID, spec.WidthPercent, spec.HeightPercent, spec.Position); err != nil {
 		return fmt.Errorf("failed to resize window to percentage: %w", err)
 	}
 	

@@ -91,7 +91,7 @@ It properly searches scratchpad workspaces and handles geometry for consistent s
 	}
 
 	// Add geometry flag
-	summonCmd.Flags().StringVarP(&geometry, "geometry", "g", "", fmt.Sprintf("Window geometry (default: %s)", constants.DefaultGeometry))
+	summonCmd.Flags().StringVarP(&geometry, "geometry", "g", "", fmt.Sprintf("Window geometry with optional position (default: %s, example: 80%%x60%%@bottom)", constants.DefaultGeometry))
 
 	return summonCmd
 }

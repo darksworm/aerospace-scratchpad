@@ -6,7 +6,7 @@ const (
 	DefaultScratchpadWorkspaceName = ".scratchpad"
 	
 	// DefaultGeometry is the default geometry for windows when pulled to current workspace
-	// Format: widthPercent%xheightPercent%
+	// Format: widthPercent%xheightPercent%[@position]
 	DefaultGeometry = "60%x90%"
 )
 
@@ -37,3 +37,4 @@ var DefaultScratchpadAppWorkspaces = map[string]string{
 	"Linear":            DefaultScratchpadWorkspaceName,  // Linear can go to default scratchpad
 	"Spotify":           DefaultScratchpadWorkspaceName,  // Spotify can go to default scratchpad
 }
+

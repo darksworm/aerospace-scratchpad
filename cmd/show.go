@@ -36,8 +36,8 @@ Examples:
   # Show from default scratchpad
   aerospace-scratchpad show Terminal
   
-  # Show from custom workspace with geometry
-  aerospace-scratchpad show --workspace "dev" --geometry "60%x90%" Terminal
+  # Show from custom workspace with geometry and position
+  aerospace-scratchpad show --workspace "dev" --geometry "80%x60%@bottom" Finder
 `,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -259,7 +259,7 @@ Examples:
 
 	// Add flags
 	showCmd.Flags().StringVarP(&workspace, "workspace", "w", "", "Source workspace (defaults to .scratchpad)")
-	showCmd.Flags().StringVarP(&geometry, "geometry", "g", "", "Window geometry when pulled to current workspace (e.g., 60%x90%)")
+	showCmd.Flags().StringVarP(&geometry, "geometry", "g", "", "Window geometry when pulled to current workspace (e.g., 60%x90%@bottom)")
 
 	return showCmd
 }
