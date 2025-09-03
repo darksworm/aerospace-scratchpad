@@ -353,19 +353,24 @@ func sendToFocusedWorkspace(
 		return fmt.Errorf("unable to move window '%+v' to workspace '%s': %w", window, focusedWorkspace.Workspace, err)
 	}
 
-	// Apply geometry first if specified (includes positioning and sizing)
+	// FIRST: Always focus the window immediately after moving it
+	if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
+		return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
+	}
+
+	// Focus the window using AeroSpace's built-in focus mechanism (faster than external commands)
+	logger.LogDebug("SHOW: focusing window", "appName", window.AppName, "windowID", window.WindowID)
+
+	// SECOND: Apply geometry if specified (this will focus again internally)
 	if geometry != "" {
 		if err := extendedClient.ApplyGeometry(window.WindowID, geometry); err != nil {
 			return fmt.Errorf("unable to apply geometry to window '%+v': %w", window, err)
 		}
-	}
-
-	// Single focus call at the end to bring window to front
-	if shouldSetFocus {
+		
+		// THIRD: Focus one more time after geometry changes
 		if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
-			return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
+			return fmt.Errorf("unable to set focus to window '%+v' after geometry: %w", window, err)
 		}
-		logger.LogDebug("SHOW: focused window", "appName", window.AppName, "windowID", window.WindowID)
 	}
 
 	fmt.Printf("Window '%+v' is summoned\n", window)
