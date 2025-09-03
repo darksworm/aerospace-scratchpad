@@ -288,6 +288,24 @@ Examples:
 				}
 				
 				logger.LogDebug("SHOW: found windows after launch", "windowsInFocusedWorkspace", len(windowsInFocusedWorkspace), "windowsOutsideView", len(windowsOutsideView))
+				
+				// Special handling for newly launched apps: move them to scratchpad first
+				// Since they appeared in the current workspace, they're in windowsInFocusedWorkspace
+				// but we need to move them to scratchpad first before showing them
+				if len(windowsInFocusedWorkspace) > 0 {
+					logger.LogDebug("SHOW: moving newly launched app to scratchpad first")
+					for _, window := range windowsInFocusedWorkspace {
+						if err := sendToScratchpad(aerospaceClient, window, sourceWorkspace); err != nil {
+							logger.LogError("SHOW: unable to move newly launched app to scratchpad", "window", window, "error", err)
+							// Continue anyway
+						}
+					}
+					// After moving to scratchpad, clear windowsInFocusedWorkspace and move them to windowsOutsideView
+					windowsOutsideView = append(windowsOutsideView, windowsInFocusedWorkspace...)
+					windowsInFocusedWorkspace = []aerospacecli.Window{}
+					hasAtLeastOneWindowFocused = false
+					logger.LogDebug("SHOW: moved launched windows to scratchpad, now treating as outside view")
+				}
 			}
 
 			// NOTE: To avoid the ping pong of windows, so priority is
