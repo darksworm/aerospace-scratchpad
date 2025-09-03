@@ -143,52 +143,89 @@ class WindowManager {
         let positionValue = AXValueCreate(.cgPoint, &newPosition)!
         let sizeValue = AXValueCreate(.cgSize, &newSize)!
         
-        let positionResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, positionValue)
+        // Try to resize first, then position
         let sizeResult = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
+        let positionResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, positionValue)
+        
+        if sizeResult != AXError.success {
+            print("Warning: Failed to set window size (error: \(sizeResult.rawValue))")
+            print("Fallback: Attempting to position window without resizing...")
+            
+            // If resize failed, try to position the window at its current size
+            // First get the current size to calculate proper positioning
+            var currentSizeRef: CFTypeRef?
+            if AXUIElementCopyAttributeValue(window, kAXSizeAttribute as CFString, &currentSizeRef) == AXError.success,
+               let sizeRef = currentSizeRef {
+                var currentSize = CGSize.zero
+                if AXValueGetValue(sizeRef as! AXValue, .cgSize, &currentSize) {
+                    // Recalculate position based on current size instead of target size
+                    let (fallbackX, fallbackY) = calculatePositionForSize(
+                        position: position,
+                        safeFrame: safeFrame,
+                        windowWidth: currentSize.width,
+                        windowHeight: currentSize.height
+                    )
+                    
+                    var fallbackPosition = CGPoint(x: fallbackX, y: fallbackY)
+                    let fallbackPositionValue = AXValueCreate(.cgPoint, &fallbackPosition)!
+                    let fallbackPositionResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, fallbackPositionValue)
+                    
+                    if fallbackPositionResult == AXError.success {
+                        print("Fallback positioning successful at (\(fallbackX), \(fallbackY)) with current size \(currentSize.width)x\(currentSize.height)")
+                        return true
+                    } else {
+                        print("Fallback positioning also failed (error: \(fallbackPositionResult.rawValue))")
+                    }
+                }
+            }
+        } else if positionResult != AXError.success {
+            print("Warning: Failed to set window position (error: \(positionResult.rawValue))")
+        }
         
         if positionResult != AXError.success {
             print("Warning: Failed to set window position (error: \(positionResult.rawValue))")
         }
         
-        if sizeResult != AXError.success {
-            print("Warning: Failed to set window size (error: \(sizeResult.rawValue))")
-        }
-        
-        return positionResult == AXError.success && sizeResult == AXError.success
+        return positionResult == AXError.success || sizeResult == AXError.success
     }
     
     // Calculate window position based on position parameter
     func calculatePosition(position: String, safeFrame: CGRect, targetWidth: CGFloat, targetHeight: CGFloat) -> (CGFloat, CGFloat) {
+        return calculatePositionForSize(position: position, safeFrame: safeFrame, windowWidth: targetWidth, windowHeight: targetHeight)
+    }
+    
+    // Calculate window position for given window size
+    func calculatePositionForSize(position: String, safeFrame: CGRect, windowWidth: CGFloat, windowHeight: CGFloat) -> (CGFloat, CGFloat) {
         switch position.lowercased() {
         case "center":
-            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
-            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            let centerX = safeFrame.origin.x + (safeFrame.width - windowWidth) / 2
+            let centerY = safeFrame.origin.y + (safeFrame.height - windowHeight) / 2
             return (centerX, centerY)
             
         case "top":
-            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
+            let centerX = safeFrame.origin.x + (safeFrame.width - windowWidth) / 2
             let topY = safeFrame.origin.y + 20 // Small margin from top
             return (centerX, topY)
             
         case "bottom":
-            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
-            let bottomY = safeFrame.origin.y + safeFrame.height - targetHeight - 20 // Small margin from bottom
+            let centerX = safeFrame.origin.x + (safeFrame.width - windowWidth) / 2
+            let bottomY = safeFrame.origin.y + safeFrame.height - windowHeight - 20 // Small margin from bottom
             return (centerX, bottomY)
             
         case "left":
             let leftX = safeFrame.origin.x + 20 // Small margin from left
-            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            let centerY = safeFrame.origin.y + (safeFrame.height - windowHeight) / 2
             return (leftX, centerY)
             
         case "right":
-            let rightX = safeFrame.origin.x + safeFrame.width - targetWidth - 20 // Small margin from right
-            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            let rightX = safeFrame.origin.x + safeFrame.width - windowWidth - 20 // Small margin from right
+            let centerY = safeFrame.origin.y + (safeFrame.height - windowHeight) / 2
             return (rightX, centerY)
             
         default:
             // Default to center for unknown positions
-            let centerX = safeFrame.origin.x + (safeFrame.width - targetWidth) / 2
-            let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
+            let centerX = safeFrame.origin.x + (safeFrame.width - windowWidth) / 2
+            let centerY = safeFrame.origin.y + (safeFrame.height - windowHeight) / 2
             return (centerX, centerY)
         }
     }
