@@ -52,20 +52,23 @@ class WindowManager {
             return false
         }
         
-        // Get main screen dimensions
-        guard let mainScreen = NSScreen.main else {
-            print("Error: Could not get main screen")
+        // Get the screen that contains this window
+        let windowScreen = getScreenForWindow(windowInfo.bounds) ?? NSScreen.main
+        guard let targetScreen = windowScreen else {
+            print("Error: Could not determine target screen")
             return false
         }
         
-        let screenFrame = mainScreen.frame
-        let screenVisibleFrame = mainScreen.visibleFrame
+        let screenFrame = targetScreen.frame
+        let screenVisibleFrame = targetScreen.visibleFrame
         
         // For modern MacBooks with notch, use the safe area below the notch
         // The visibleFrame already accounts for menu bar, dock, and notch
         let safeFrame = screenVisibleFrame
         
         // Debug output to show frame information
+        print("Window current bounds: \(windowInfo.bounds)")
+        print("Using screen: \(targetScreen.localizedName)")
         print("Full screen frame: \(screenFrame)")
         print("Visible frame (safe area below notch): \(safeFrame)")
         
@@ -188,6 +191,44 @@ class WindowManager {
             let centerY = safeFrame.origin.y + (safeFrame.height - targetHeight) / 2
             return (centerX, centerY)
         }
+    }
+    
+    // Get the screen that contains the given window bounds
+    func getScreenForWindow(_ windowBounds: CGRect) -> NSScreen? {
+        let windowCenter = CGPoint(
+            x: windowBounds.origin.x + windowBounds.size.width / 2,
+            y: windowBounds.origin.y + windowBounds.size.height / 2
+        )
+        
+        // Find the screen that contains the center of the window
+        for screen in NSScreen.screens {
+            if screen.frame.contains(windowCenter) {
+                print("Found window on screen: \(screen.localizedName)")
+                return screen
+            }
+        }
+        
+        // If no screen contains the center, find the screen with the most overlap
+        var bestScreen: NSScreen?
+        var maxOverlapArea: CGFloat = 0
+        
+        for screen in NSScreen.screens {
+            let intersection = windowBounds.intersection(screen.frame)
+            let overlapArea = intersection.size.width * intersection.size.height
+            
+            if overlapArea > maxOverlapArea {
+                maxOverlapArea = overlapArea
+                bestScreen = screen
+            }
+        }
+        
+        if let screen = bestScreen {
+            print("Using screen with best overlap: \(screen.localizedName)")
+        } else {
+            print("No suitable screen found, will use main screen")
+        }
+        
+        return bestScreen
     }
 }
 
