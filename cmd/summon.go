@@ -5,8 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/ilmars/aerospace-sticky/internal/aerospace"
@@ -74,8 +76,28 @@ It properly searches scratchpad workspaces and handles geometry for consistent s
 			logger.LogDebug("SUMMON: found matching windows", "windows", matchingWindows)
 
 			if len(matchingWindows) == 0 {
-				stderr.Printf("Error: no scratchpad windows matched the pattern '%s'\n", windowNamePattern)
-				return
+				// No windows found, try launching the app
+				logger.LogDebug("SUMMON: no windows found, attempting to launch app", "appName", windowNamePattern)
+				
+				if err := launchAppAndWaitSummon(windowNamePattern, aerospaceClient); err != nil {
+					stderr.Printf("Error: no scratchpad windows matched the pattern '%s' and unable to launch app: %v\n", windowNamePattern, err)
+					return
+				}
+				
+				// Retry finding windows after launch
+				matchingWindows, err = findScratchpadWindows(aerospaceClient, windowPattern)
+				if err != nil {
+					stderr.Printf("Error: unable to find scratchpad windows after launch: %v\n", err)
+					return
+				}
+				
+				// Check again if we found windows after launch
+				if len(matchingWindows) == 0 {
+					stderr.Printf("Error: app '%s' launched but no scratchpad windows found\n", windowNamePattern)
+					return
+				}
+				
+				logger.LogDebug("SUMMON: found windows after launch", "windows", matchingWindows)
 			}
 
 			// Summon the first matching window
@@ -213,4 +235,44 @@ func summonWindowToWorkspace(
 
 	logger.LogDebug("SUMMON: successfully summoned window", "window", window, "workspace", focusedWorkspace.Workspace, "geometry", geometry)
 	return nil
+}
+
+// launchAppAndWaitSummon launches an application and waits for it to appear
+func launchAppAndWaitSummon(appName string, aerospaceClient aerospacecli.AeroSpaceClient) error {
+	logger := logger.GetDefaultLogger()
+	
+	logger.LogDebug("LAUNCH: attempting to launch app", "appName", appName)
+	fmt.Printf("Launching %s...\n", appName)
+	
+	// Launch the application using open command
+	cmd := exec.Command("open", "-a", appName)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to launch app '%s': %w", appName, err)
+	}
+	
+	// Wait for the app to launch and create windows
+	for attempt := 0; attempt < constants.AppLaunchMaxRetries; attempt++ {
+		logger.LogDebug("LAUNCH: waiting for app to start", "appName", appName, "attempt", attempt+1)
+		
+		// Wait before checking
+		time.Sleep(time.Duration(constants.AppLaunchTimeoutSeconds) * time.Second / constants.AppLaunchMaxRetries)
+		
+		// Check if app has created any windows
+		windows, err := aerospaceClient.GetAllWindows()
+		if err != nil {
+			logger.LogDebug("LAUNCH: error getting windows during launch wait", "error", err)
+			continue
+		}
+		
+		// Look for windows of this app
+		for _, window := range windows {
+			if window.AppName == appName {
+				logger.LogDebug("LAUNCH: app successfully launched", "appName", appName, "windowID", window.WindowID)
+				fmt.Printf("Successfully launched %s\n", appName)
+				return nil
+			}
+		}
+	}
+	
+	return fmt.Errorf("app '%s' launched but no windows appeared within timeout", appName)
 }

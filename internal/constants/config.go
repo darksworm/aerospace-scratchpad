@@ -8,6 +8,10 @@ const (
 	// DefaultGeometry is the default geometry for windows when pulled to current workspace
 	// Format: widthPercent%xheightPercent%[@position]
 	DefaultGeometry = "60%x90%"
+	
+	// App launch timeout configuration
+	AppLaunchTimeoutSeconds = 3
+	AppLaunchMaxRetries     = 3
 )
 
 // DefaultScratchpadAppWorkspaces maps common scratchpad application names to their default workspaces

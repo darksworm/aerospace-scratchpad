@@ -5,8 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/ilmars/aerospace-sticky/internal/aerospace"
@@ -223,8 +225,69 @@ Examples:
 			}
 
 			if len(windowsInFocusedWorkspace) == 0 && len(windowsOutsideView) == 0 {
-				stderr.Println("Error: no windows matched the pattern '%s'", windowNamePattern)
-				return
+				// No windows found, try launching the app
+				logger.LogDebug("SHOW: no windows found, attempting to launch app", "appName", windowNamePattern)
+				
+				if err := launchAppAndWait(windowNamePattern, aerospaceClient); err != nil {
+					stderr.Printf("Error: no windows matched the pattern '%s' and unable to launch app: %v\n", windowNamePattern, err)
+					return
+				}
+				
+				// Retry finding windows after launch
+				windows, err = aerospaceClient.GetAllWindows()
+				if err != nil {
+					stderr.Printf("Error: unable to get windows after launch: %v\n", err)
+					return
+				}
+				
+				// Re-run the window filtering logic after launch
+				windowsInFocusedWorkspace = []aerospacecli.Window{}
+				windowsOutsideView = []aerospacecli.Window{}
+				hasAtLeastOneWindowFocused = false
+				
+				for _, window := range windows {
+					if !windowPattern.MatchString(window.AppName) {
+						continue
+					}
+					
+					querier := aerospace.NewAerospaceQuerier(aerospaceClient)
+					var isInFocusedWorkspace bool
+					var isInSourceWorkspace bool
+					
+					if window.Workspace == "" {
+						isInFocusedWorkspace, err = querier.IsWindowInWorkspace(window.WindowID, focusedWorkspace.Workspace)
+						if err != nil {
+							stderr.Printf("Error: unable to check if window '%+v' is in workspace '%s'\n", window, focusedWorkspace.Workspace)
+							return
+						}
+						
+						isInSourceWorkspace, err = querier.IsWindowInWorkspace(window.WindowID, sourceWorkspace)
+						if err != nil {
+							stderr.Printf("Error: unable to check if window '%+v' is in workspace '%s'\n", window, sourceWorkspace)
+							return
+						}
+					} else {
+						isInFocusedWorkspace = window.Workspace == focusedWorkspace.Workspace
+						isInSourceWorkspace = window.Workspace == sourceWorkspace
+					}
+					
+					if isInFocusedWorkspace {
+						windowsInFocusedWorkspace = append(windowsInFocusedWorkspace, window)
+						hasAtLeastOneWindowFocused = true
+					} else {
+						if isInSourceWorkspace {
+							windowsOutsideView = append(windowsOutsideView, window)
+						}
+					}
+				}
+				
+				// Check again if we found windows after launch
+				if len(windowsInFocusedWorkspace) == 0 && len(windowsOutsideView) == 0 {
+					stderr.Printf("Error: app '%s' launched but no windows matched the pattern\n", windowNamePattern)
+					return
+				}
+				
+				logger.LogDebug("SHOW: found windows after launch", "windowsInFocusedWorkspace", len(windowsInFocusedWorkspace), "windowsOutsideView", len(windowsOutsideView))
 			}
 
 			// NOTE: To avoid the ping pong of windows, so priority is
@@ -353,24 +416,19 @@ func sendToFocusedWorkspace(
 		return fmt.Errorf("unable to move window '%+v' to workspace '%s': %w", window, focusedWorkspace.Workspace, err)
 	}
 
-	// FIRST: Always focus the window immediately after moving it
-	if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
-		return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
-	}
-
-	// Focus the window using AeroSpace's built-in focus mechanism (faster than external commands)
-	logger.LogDebug("SHOW: focusing window", "appName", window.AppName, "windowID", window.WindowID)
-
-	// SECOND: Apply geometry if specified (this will focus again internally)
+	// Apply geometry first if specified, then focus only once at the end
 	if geometry != "" {
 		if err := extendedClient.ApplyGeometry(window.WindowID, geometry); err != nil {
 			return fmt.Errorf("unable to apply geometry to window '%+v': %w", window, err)
 		}
-		
-		// THIRD: Focus one more time after geometry changes
+	}
+	
+	// Focus the window only once at the end if we should
+	if shouldSetFocus {
 		if err := aerospaceClient.SetFocusByWindowID(window.WindowID); err != nil {
-			return fmt.Errorf("unable to set focus to window '%+v' after geometry: %w", window, err)
+			return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
 		}
+		logger.LogDebug("SHOW: focused window", "appName", window.AppName, "windowID", window.WindowID)
 	}
 
 	fmt.Printf("Window '%+v' is summoned\n", window)
@@ -452,4 +510,44 @@ func moveOtherScratchpadsToWorkspaces(
 	}
 
 	return nil
+}
+
+// launchAppAndWait launches an application and waits for it to appear
+func launchAppAndWait(appName string, aerospaceClient aerospacecli.AeroSpaceClient) error {
+	logger := logger.GetDefaultLogger()
+	
+	logger.LogDebug("LAUNCH: attempting to launch app", "appName", appName)
+	fmt.Printf("Launching %s...\n", appName)
+	
+	// Launch the application using open command
+	cmd := exec.Command("open", "-a", appName)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to launch app '%s': %w", appName, err)
+	}
+	
+	// Wait for the app to launch and create windows
+	for attempt := 0; attempt < constants.AppLaunchMaxRetries; attempt++ {
+		logger.LogDebug("LAUNCH: waiting for app to start", "appName", appName, "attempt", attempt+1)
+		
+		// Wait before checking
+		time.Sleep(time.Duration(constants.AppLaunchTimeoutSeconds) * time.Second / constants.AppLaunchMaxRetries)
+		
+		// Check if app has created any windows
+		windows, err := aerospaceClient.GetAllWindows()
+		if err != nil {
+			logger.LogDebug("LAUNCH: error getting windows during launch wait", "error", err)
+			continue
+		}
+		
+		// Look for windows of this app
+		for _, window := range windows {
+			if window.AppName == appName {
+				logger.LogDebug("LAUNCH: app successfully launched", "appName", appName, "windowID", window.WindowID)
+				fmt.Printf("Successfully launched %s\n", appName)
+				return nil
+			}
+		}
+	}
+	
+	return fmt.Errorf("app '%s' launched but no windows appeared within timeout", appName)
 }
