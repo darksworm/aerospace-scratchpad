@@ -122,6 +122,29 @@ func findScratchpadWindows(aerospaceClient aerospacecli.AeroSpaceClient, pattern
 		}
 	}
 
+	// If no windows found in scratchpad workspaces, search all workspaces as fallback
+	if len(matchingWindows) == 0 {
+		logger.LogDebug("SUMMON: no windows found in scratchpad workspaces, searching all workspaces")
+		
+		allWindows, err := aerospaceClient.GetAllWindows()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get all windows for fallback search: %w", err)
+		}
+		
+		for _, window := range allWindows {
+			if pattern.MatchString(window.AppName) {
+				logger.LogDebug("SUMMON: found matching window in fallback search", "window", window, "workspace", window.Workspace)
+				matchingWindows = append(matchingWindows, window)
+				
+				// Log that we found a "stuck" window
+				if !isKnownScratchpadWorkspace(window.Workspace) {
+					logger.LogDebug("SUMMON: found stuck scratchpad window", "window", window, "stuckWorkspace", window.Workspace)
+					fmt.Printf("Found scratchpad window '%s' stuck in workspace '%s'\n", window.AppName, window.Workspace)
+				}
+			}
+		}
+	}
+
 	return matchingWindows, nil
 }
 
@@ -144,6 +167,17 @@ func getScratchpadWorkspaces() []string {
 	}
 	
 	return workspaces
+}
+
+// isKnownScratchpadWorkspace checks if a workspace is a known scratchpad workspace
+func isKnownScratchpadWorkspace(workspace string) bool {
+	scratchpadWorkspaces := getScratchpadWorkspaces()
+	for _, scratchpadWorkspace := range scratchpadWorkspaces {
+		if workspace == scratchpadWorkspace {
+			return true
+		}
+	}
+	return false
 }
 
 // summonWindowToWorkspace moves a window to the focused workspace with proper geometry

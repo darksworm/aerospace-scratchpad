@@ -173,6 +173,29 @@ Examples:
 				"hasAtLeastOneWindowFocused", hasAtLeastOneWindowFocused,
 			)
 
+			// If no matching windows found in the expected source workspace, search all workspaces as fallback
+			if len(windowsOutsideView) == 0 && len(windowsInFocusedWorkspace) == 0 {
+				logger.LogDebug("SHOW: no windows found in expected workspace, searching all workspaces for stuck scratchpads")
+				
+				for _, window := range windows {
+					if !windowPattern.MatchString(window.AppName) {
+						continue
+					}
+					
+					// Skip windows already found in the focused workspace
+					if window.Workspace == focusedWorkspace.Workspace {
+						continue
+					}
+					
+					// This is a matching window stuck in some other workspace
+					logger.LogDebug("SHOW: found stuck scratchpad window", "window", window, "stuckWorkspace", window.Workspace)
+					fmt.Printf("Found scratchpad window '%s' stuck in workspace '%s'\n", window.AppName, window.Workspace)
+					windowsOutsideView = append(windowsOutsideView, window)
+				}
+				
+				logger.LogDebug("SHOW: fallback search found", "windowsOutsideView", windowsOutsideView)
+			}
+
 			// Move other scratchpads back to their respective workspaces before showing this one
 			// Pass the source workspace so cleanup respects the --workspace flag
 			err = moveOtherScratchpadsToWorkspaces(aerospaceClient, windows, windowPattern, focusedWorkspace.Workspace, sourceWorkspace)
