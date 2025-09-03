@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 	"regexp"
 	"strings"
 
@@ -359,15 +358,8 @@ func sendToFocusedWorkspace(
 		return fmt.Errorf("unable to set focus to window '%+v': %w", window, err)
 	}
 
-	// Try to activate the application directly to ensure it comes to front
-	// Use the window information that's already available from the caller
-	if window.AppName != "" {
-		logger.LogDebug("SHOW: activating app", "appName", window.AppName, "windowID", window.WindowID)
-		fmt.Printf("Activating app '%s' for window %d\n", window.AppName, window.WindowID)
-		// Try different activation methods
-		exec.Command("open", "-a", window.AppName).Run()
-		exec.Command("osascript", "-e", fmt.Sprintf(`tell application "%s" to activate`, window.AppName)).Run()
-	}
+	// Focus the window using AeroSpace's built-in focus mechanism (faster than external commands)
+	logger.LogDebug("SHOW: focusing window", "appName", window.AppName, "windowID", window.WindowID)
 
 	// SECOND: Apply geometry if specified (this will focus again internally)
 	if geometry != "" {
