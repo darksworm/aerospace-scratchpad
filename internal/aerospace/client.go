@@ -121,10 +121,6 @@ func (c *ExtendedAeroSpaceClient) ResizeToPercentage(windowID int, widthPercent,
 
 // ResizeToPercentageWithPosition resizes and positions a window using Swift window manager
 func (c *ExtendedAeroSpaceClient) ResizeToPercentageWithPosition(windowID int, widthPercent, heightPercent int, position string) error {
-	// Focus the window first to ensure it's active
-	if err := c.SetFocusByWindowID(windowID); err != nil {
-		fmt.Printf("Warning: failed to focus window %d before resizing: %v\n", windowID, err)
-	}
 	
 	// Extract the embedded Swift window manager binary
 	windowManagerPath, err := extractWindowManagerBinary()
