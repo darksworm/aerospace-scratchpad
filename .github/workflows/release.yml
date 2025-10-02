@@ -39,6 +39,7 @@ jobs:
           binary_name: aerospace-scratchpad
           project_path: ./
           extra_files: LICENSE README.md
+          ldflags: "-s -w -X github.com/cristianoliveira/aerospace-scratchpad/cmd.VERSION=${{ github.event.release.tag_name }}"
           compress_assets: true
           overwrite: true
 
