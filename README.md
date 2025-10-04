@@ -71,11 +71,22 @@ ctrl-cmd-t = """
 exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-scratchpad' \
              || alacritty -t 'terminal-scratchpad'
 """
+```
 
-# If you use more than one monitor make sure to assign the `.scratchpad` workspace
-# to a non-main monitor for a better UX
+#### Config for good UX with multi-monitors
+
+In order to have a better experience with scratchpads on multi-monitor setups
+it is recommended to assign the `.scratchpad` workspace to your `main` monitor so 
+it won't get focused when hiding/showing scratchpad windows.
+
+See the [AeroSpace documentation](https://nikitabobko.github.io/AeroSpace/guide#multiple-monitors) for more details
+around the multi-monitor model followed by AeroSpace.
+
+```toml
+# ~/.config/aerospace/config.toml
+# ...your configuration
 [workspace-to-monitor-force-assignment]
-".scratchpad" = ['secondary', 'main']
+".scratchpad" = "main"
 ```
 
 ## Advanced Usage
