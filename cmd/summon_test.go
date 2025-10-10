@@ -1,19 +1,23 @@
-package cmd
+package cmd_test //nolint:cyclop // integration-style tests use complex setup to cover scenarios
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
 
+	"github.com/gkampitakis/go-snaps/snaps"
+	"go.uber.org/mock/gomock"
+
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
+	"github.com/cristianoliveira/aerospace-scratchpad/cmd"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
 	mock_aerospace "github.com/cristianoliveira/aerospace-scratchpad/internal/mocks/aerospacecli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/testutils"
-	"github.com/gkampitakis/go-snaps/snaps"
-	"go.uber.org/mock/gomock"
 )
 
+//nolint:gocognit // Integration test covers multiple window flows in one place
 func TestSummonCmd(t *testing.T) {
 	logger.SetDefaultLogger(&logger.EmptyLogger{})
 	stderr.SetBehavior(false)
@@ -40,7 +44,7 @@ func TestSummonCmd(t *testing.T) {
 				Workspace: &aerospacecli.Workspace{
 					Workspace: "ws1",
 				},
-				FocusedWindowId: 5678,
+				FocusedWindowID: 5678,
 			},
 		}
 		allWindows := testutils.ExtractAllWindows(tree)
@@ -75,7 +79,7 @@ func TestSummonCmd(t *testing.T) {
 				Times(1),
 		)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
@@ -108,7 +112,7 @@ func TestSummonCmd(t *testing.T) {
 				Workspace: &aerospacecli.Workspace{
 					Workspace: "ws1",
 				},
-				FocusedWindowId: 5678,
+				FocusedWindowID: 5678,
 			},
 		}
 		allWindows := testutils.ExtractAllWindows(tree)
@@ -127,7 +131,7 @@ func TestSummonCmd(t *testing.T) {
 				Times(1),
 		)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err == nil {
 			t.Errorf("Expected error, got nil")
@@ -138,86 +142,98 @@ func TestSummonCmd(t *testing.T) {
 		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
 	})
 
-	t.Run("fails when getting all windows returns an error", func(t *testing.T) {
-		command := "summon"
-		args := []string{command, "test"}
+	t.Run(
+		"fails when getting all windows returns an error",
+		func(t *testing.T) {
+			command := "summon"
+			args := []string{command, "test"}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
-		gomock.InOrder(
-			aerospaceClient.EXPECT().
-				GetFocusedWorkspace().
-				Return(&aerospacecli.Workspace{Workspace: "ws1"}, nil).
-				Times(1),
-			aerospaceClient.EXPECT().
-				GetAllWindows().
-				Return(nil, fmt.Errorf("mocked_error")).
-				Times(1),
-		)
+			aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
+			gomock.InOrder(
+				aerospaceClient.EXPECT().
+					GetFocusedWorkspace().
+					Return(&aerospacecli.Workspace{Workspace: "ws1"}, nil).
+					Times(1),
+				aerospaceClient.EXPECT().
+					GetAllWindows().
+					Return(nil, errors.New("mocked_error")).
+					Times(1),
+			)
 
-		cmd := RootCmd(aerospaceClient)
-		out, err := testutils.CmdExecute(cmd, args...)
-		if err == nil {
-			t.Errorf("Expected error, got nil")
-		}
+			cmd := cmd.RootCmd(aerospaceClient)
+			out, err := testutils.CmdExecute(cmd, args...)
+			if err == nil {
+				t.Errorf("Expected error, got nil")
+			}
 
-		if out != "" {
-			t.Errorf("Expected empty output, got %s", out)
-		}
+			if out != "" {
+				t.Errorf("Expected empty output, got %s", out)
+			}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
-	})
+			cmdAsString := "aerospace-scratchpad " + strings.Join(
+				args,
+				" ",
+			) + "\n"
+			errorMessage := fmt.Sprintf("Error\n %+v", err)
+			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		},
+	)
 
-	t.Run("fails when getting focused workspace returns an error", func(t *testing.T) {
-		command := "summon"
-		args := []string{command, "Notepad"}
+	t.Run(
+		"fails when getting focused workspace returns an error",
+		func(t *testing.T) {
+			command := "summon"
+			args := []string{command, "Notepad"}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		tree := []testutils.AeroSpaceTree{
-			{
-				Windows: []aerospacecli.Window{
-					{
-						AppName:  "Notepad",
-						WindowID: 1234,
+			tree := []testutils.AeroSpaceTree{
+				{
+					Windows: []aerospacecli.Window{
+						{
+							AppName:  "Notepad",
+							WindowID: 1234,
+						},
 					},
+					Workspace: &aerospacecli.Workspace{
+						Workspace: "ws1",
+					},
+					FocusedWindowID: 1234,
 				},
-				Workspace: &aerospacecli.Workspace{
-					Workspace: "ws1",
-				},
-				FocusedWindowId: 1234,
-			},
-		}
-		_ = testutils.ExtractAllWindows(tree)
+			}
+			_ = testutils.ExtractAllWindows(tree)
 
-		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
-		// New behavior: focused workspace is fetched before listing windows
-		gomock.InOrder(
-			aerospaceClient.EXPECT().
-				GetFocusedWorkspace().
-				Return(nil, fmt.Errorf("mocked_error")).
-				Times(1),
-		)
+			aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
+			// New behavior: focused workspace is fetched before listing windows
+			gomock.InOrder(
+				aerospaceClient.EXPECT().
+					GetFocusedWorkspace().
+					Return(nil, errors.New("mocked_error")).
+					Times(1),
+			)
 
-		cmd := RootCmd(aerospaceClient)
-		out, err := testutils.CmdExecute(cmd, args...)
-		if err == nil {
-			t.Errorf("Expected error, got nil")
-		}
+			cmd := cmd.RootCmd(aerospaceClient)
+			out, err := testutils.CmdExecute(cmd, args...)
+			if err == nil {
+				t.Errorf("Expected error, got nil")
+			}
 
-		if out != "" {
-			t.Errorf("Expected empty output, got %s", out)
-		}
+			if out != "" {
+				t.Errorf("Expected empty output, got %s", out)
+			}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
-	})
+			cmdAsString := "aerospace-scratchpad " + strings.Join(
+				args,
+				" ",
+			) + "\n"
+			errorMessage := fmt.Sprintf("Error\n %+v", err)
+			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		},
+	)
 
 	t.Run("fails when regex pattern is invalid", func(t *testing.T) {
 		command := "summon"
@@ -233,7 +249,7 @@ func TestSummonCmd(t *testing.T) {
 			GetFocusedWorkspace().
 			Return(focusedWorkspace, nil)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err == nil {
 			t.Errorf("Expected error, got nil")
@@ -248,67 +264,73 @@ func TestSummonCmd(t *testing.T) {
 		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
 	})
 
-	t.Run("fails when moving window to workspace returns an error", func(t *testing.T) {
-		command := "summon"
-		args := []string{command, "Notepad"}
+	t.Run(
+		"fails when moving window to workspace returns an error",
+		func(t *testing.T) {
+			command := "summon"
+			args := []string{command, "Notepad"}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
-		tree := []testutils.AeroSpaceTree{
-			{
-				Windows: []aerospacecli.Window{
-					{
-						AppName:  "Notepad",
-						WindowID: 1234,
+			tree := []testutils.AeroSpaceTree{
+				{
+					Windows: []aerospacecli.Window{
+						{
+							AppName:  "Notepad",
+							WindowID: 1234,
+						},
 					},
+					Workspace: &aerospacecli.Workspace{
+						Workspace: "ws1",
+					},
+					FocusedWindowID: 1234,
 				},
-				Workspace: &aerospacecli.Workspace{
-					Workspace: "ws1",
-				},
-				FocusedWindowId: 1234,
-			},
-		}
-		allWindows := testutils.ExtractAllWindows(tree)
-		focusedWorkspace := &aerospacecli.Workspace{Workspace: "ws1"}
-		windows := testutils.ExtractWindowsByName(tree, "Notepad")
-		if len(windows) != 1 {
-			t.Fatalf("Expected 1 Notepad window, got %d", len(windows))
-		}
-		notepadWindow := windows[0]
+			}
+			allWindows := testutils.ExtractAllWindows(tree)
+			focusedWorkspace := &aerospacecli.Workspace{Workspace: "ws1"}
+			windows := testutils.ExtractWindowsByName(tree, "Notepad")
+			if len(windows) != 1 {
+				t.Fatalf("Expected 1 Notepad window, got %d", len(windows))
+			}
+			notepadWindow := windows[0]
 
-		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
-		gomock.InOrder(
-			aerospaceClient.EXPECT().
-				GetFocusedWorkspace().
-				Return(focusedWorkspace, nil).
-				Times(1),
+			aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
+			gomock.InOrder(
+				aerospaceClient.EXPECT().
+					GetFocusedWorkspace().
+					Return(focusedWorkspace, nil).
+					Times(1),
 
-			aerospaceClient.EXPECT().
-				GetAllWindows().
-				Return(allWindows, nil).
-				Times(1),
+				aerospaceClient.EXPECT().
+					GetAllWindows().
+					Return(allWindows, nil).
+					Times(1),
 
-			aerospaceClient.EXPECT().
-				MoveWindowToWorkspace(notepadWindow.WindowID, focusedWorkspace.Workspace).
-				Return(fmt.Errorf("mocked_move_error")).
-				Times(1),
-		)
+				aerospaceClient.EXPECT().
+					MoveWindowToWorkspace(notepadWindow.WindowID, focusedWorkspace.Workspace).
+					Return(errors.New("mocked_move_error")).
+					Times(1),
+			)
 
-		cmd := RootCmd(aerospaceClient)
-		out, err := testutils.CmdExecute(cmd, args...)
-		if err == nil {
-			t.Errorf("Expected error, got nil")
-		}
+			cmd := cmd.RootCmd(aerospaceClient)
+			out, err := testutils.CmdExecute(cmd, args...)
+			if err == nil {
+				t.Errorf("Expected error, got nil")
+			}
 
-		if out != "" {
-			t.Errorf("Expected empty output, got %s", out)
-		}
+			if out != "" {
+				t.Errorf("Expected empty output, got %s", out)
+			}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
-	})
+			cmdAsString := "aerospace-scratchpad " + strings.Join(
+				args,
+				" ",
+			) + "\n"
+			errorMessage := fmt.Sprintf("Error\n %+v", err)
+			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		},
+	)
 
 	t.Run("fails when setting focus returns an error", func(t *testing.T) {
 		command := "summon"
@@ -328,7 +350,7 @@ func TestSummonCmd(t *testing.T) {
 				Workspace: &aerospacecli.Workspace{
 					Workspace: "ws1",
 				},
-				FocusedWindowId: 1234,
+				FocusedWindowID: 1234,
 			},
 		}
 		allWindows := testutils.ExtractAllWindows(tree)
@@ -358,11 +380,11 @@ func TestSummonCmd(t *testing.T) {
 
 			aerospaceClient.EXPECT().
 				SetFocusByWindowID(notepadWindow.WindowID).
-				Return(fmt.Errorf("mocked_focus_error")).
+				Return(errors.New("mocked_focus_error")).
 				Times(1),
 		)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err == nil {
 			t.Errorf("Expected error, got nil")
@@ -403,14 +425,20 @@ func TestSummonCmd(t *testing.T) {
 				Workspace: &aerospacecli.Workspace{
 					Workspace: "ws1",
 				},
-				FocusedWindowId: 9012,
+				FocusedWindowID: 9012,
 			},
 		}
 		allWindows := testutils.ExtractAllWindows(tree)
 		focusedWorkspace := &aerospacecli.Workspace{Workspace: "ws1"}
-		windows := testutils.ExtractWindowsByName(tree, ".*(Notepad|TextEdit).*")
+		windows := testutils.ExtractWindowsByName(
+			tree,
+			".*(Notepad|TextEdit).*",
+		)
 		if len(windows) != 2 {
-			t.Fatalf("Expected 2 windows matching pattern, got %d", len(windows))
+			t.Fatalf(
+				"Expected 2 windows matching pattern, got %d",
+				len(windows),
+			)
 		}
 
 		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
@@ -446,7 +474,7 @@ func TestSummonCmd(t *testing.T) {
 				Times(1),
 		)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
@@ -466,7 +494,7 @@ func TestSummonCmd(t *testing.T) {
 
 		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err == nil {
 			t.Errorf("Expected error for empty pattern, got nil")
@@ -486,7 +514,7 @@ func TestSummonCmd(t *testing.T) {
 
 		aerospaceClient := mock_aerospace.NewMockAeroSpaceClient(ctrl)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err == nil {
 			t.Errorf("Expected error for whitespace-only pattern, got nil")
@@ -519,7 +547,7 @@ func TestSummonCmd(t *testing.T) {
 				Workspace: &aerospacecli.Workspace{
 					Workspace: "ws1",
 				},
-				FocusedWindowId: 5678,
+				FocusedWindowID: 5678,
 			},
 		}
 		allWindows := testutils.ExtractAllWindows(tree)
@@ -555,7 +583,7 @@ func TestSummonCmd(t *testing.T) {
 				Times(0), // DO NOT RUN in dry-run mode
 		)
 
-		cmd := RootCmd(aerospaceClient)
+		cmd := cmd.RootCmd(aerospaceClient)
 		out, err := testutils.CmdExecute(cmd, args...)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)

@@ -6,14 +6,18 @@ package cmd
 import (
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/cli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
-	"github.com/spf13/cobra"
 )
 
+// SummonCmd represents the summon command.
+//
+//nolint:funlen
 func SummonCmd(
 	aerospaceClient aerospacecli.AeroSpaceClient,
 ) *cobra.Command {
@@ -37,7 +41,11 @@ If no pattern is provided, it summons the first window in the scratchpad.
 
 			focusedWorkspace, err := aerospaceClient.GetFocusedWorkspace()
 			if err != nil {
-				logger.LogError("SUMMON: unable to get focused workspace", "error", err)
+				logger.LogError(
+					"SUMMON: unable to get focused workspace",
+					"error",
+					err,
+				)
 				stderr.Println("Error: unable to get focused workspace")
 				return
 			}
@@ -45,7 +53,11 @@ If no pattern is provided, it summons the first window in the scratchpad.
 			// Parse filter flags
 			filterFlags, err := cmd.Flags().GetStringArray("filter")
 			if err != nil {
-				logger.LogError("SUMMON: unable to get filter flags", "error", err)
+				logger.LogError(
+					"SUMMON: unable to get filter flags",
+					"error",
+					err,
+				)
 				stderr.Println("Error: unable to get filter flags")
 				return
 			}
@@ -54,25 +66,49 @@ If no pattern is provided, it summons the first window in the scratchpad.
 			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
 			mover := aerospace.NewAeroSpaceMover(aerospaceClient)
 
-			windows, err := querier.GetFilteredWindows(windowNamePattern, filterFlags)
+			windows, err := querier.GetFilteredWindows(
+				windowNamePattern,
+				filterFlags,
+			)
 			if err != nil {
-				logger.LogError("SUMMON: unable to get filtered windows", "error", err)
+				logger.LogError(
+					"SUMMON: unable to get filtered windows",
+					"error",
+					err,
+				)
 				stderr.Println("Error: %v", err)
 				return
 			}
 
 			for _, window := range windows {
 				setFocus := true
-				err := mover.MoveWindowToWorkspace(
+				moveErr := mover.MoveWindowToWorkspace(
 					&window,
 					focusedWorkspace,
 					setFocus,
 				)
-				if err != nil {
-					if strings.Contains(err.Error(), "already belongs to workspace") {
-						logger.LogDebug("SUMMON: window already belongs to workspace", "window", window, "workspace", focusedWorkspace, "error", err)
+				if moveErr != nil {
+					if strings.Contains(
+						moveErr.Error(),
+						"already belongs to workspace",
+					) {
+						logger.LogDebug(
+							"SUMMON: window already belongs to workspace",
+							"window",
+							window,
+							"workspace",
+							focusedWorkspace,
+							"error",
+							moveErr,
+						)
 						if focusErr := aerospaceClient.SetFocusByWindowID(window.WindowID); focusErr != nil {
-							logger.LogError("SUMMON: unable to set focus to window", "window", window, "error", focusErr)
+							logger.LogError(
+								"SUMMON: unable to set focus to window",
+								"window",
+								window,
+								"error",
+								focusErr,
+							)
 							stderr.Printf(
 								"Error: unable to set focus to window '%+v'\n%s",
 								window,
@@ -84,12 +120,19 @@ If no pattern is provided, it summons the first window in the scratchpad.
 						continue
 					}
 
-					logger.LogDebug("SUMMON: unable to move window to workspace", "window", window, "workspace", focusedWorkspace, "error", err)
-					stderr.Println("Error: %v", err)
+					logger.LogDebug(
+						"SUMMON: unable to move window to workspace",
+						"window",
+						window,
+						"workspace",
+						focusedWorkspace,
+						"error",
+						moveErr,
+					)
+					stderr.Println("Error: %v", moveErr)
 					return
 				}
 			}
-
 		},
 	}
 	return command
