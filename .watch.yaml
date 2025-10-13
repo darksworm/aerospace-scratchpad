@@ -21,6 +21,7 @@
   run: 
     # Validate if file .install contains 1 otherwise 
     - if [ -f .tmp/install ]; then go install . && echo "installed latest" ; fi
+    - aerospace-scratchpad -v
   change: 
     - '**/*.go'
     - '**/*.snap'
