@@ -38,10 +38,6 @@ From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
 
 ## Basic Usage
 
-Move the current focused window to the scratchpad workspace.
-```text
-aerospace-scratchpad move <pattern>
-```
 Summon or move a window from the scratchpad workspace to the current workspace.
 ```text
 aerospace-scratchpad show <pattern>
@@ -88,6 +84,24 @@ around the multi-monitor model followed by AeroSpace.
 [workspace-to-monitor-force-assignment]
 ".scratchpad" = "main"
 ```
+
+#### Known issues 
+
+##### Scratchpad workspace take focus
+
+When using an external launcher or when clicking on a notification if the app related to that notification is in the scratchpad
+it will inevitably takes focus, which is a bit of an UX inconvenience, I'm experimenting with some solutions. Once I feel it is stable enough
+I'll merge it to master
+
+Relates to:
+ - https://github.com/cristianoliveira/aerospace-scratchpad/issues/53
+ - https://github.com/cristianoliveira/aerospace-scratchpad/pull/67
+
+##### When hiding scratchpad on a 2 monitor setup
+
+There is a on going issue related to 2 monitors (main/second), upon hiding an app from second monitor, assuming the .scratchpad is on the main, some apps when moved take with them the focus, and the 
+`.scratchpad` workspace ended up focused on the other monitor. Similar I'm experimenting with a solution, basically move the window to main monitor before hidding it. Once I feel it's stable I merge it.
+
 
 ## Advanced Usage
 
@@ -228,6 +242,8 @@ Alternatively, you can export these environment variables in your shell configur
 ```
 
 Replace the paths and values with your desired settings.
+
+### Known i
 
 ## License
 
