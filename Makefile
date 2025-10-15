@@ -20,7 +20,7 @@ setup-ci: ## Install dependencies for CI
 	@echo "Setting up CI dependencies..."
 	@if ! command -v golangci-lint &> /dev/null; then \
 		echo "golangci-lint could not be found, installing..."; \
-		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.5.0; \
 	else \
 		echo "golangci-lint is already installed"; \
 	fi
