@@ -1,3 +1,9 @@
+GOCACHE := $(CURDIR)/.cache/go-build
+GOLANGCI_LINT_CACHE := $(CURDIR)/.cache/golangci-lint
+
+export GOCACHE
+export GOLANGCI_LINT_CACHE
+
 .PHONY: help
 help: ## Lists the available commands. Add a comment with '##' to describe a command.
 	@grep -E '^[a-zA-Z_-].+:.*?## .*$$' $(MAKEFILE_LIST)\
@@ -18,6 +24,7 @@ test: ## Run the tests
 .PHONY: setup-ci
 setup-ci: ## Install dependencies for CI
 	@echo "Setting up CI dependencies..."
+	@mkdir -p $(GOCACHE) $(GOLANGCI_LINT_CACHE)
 	@if ! command -v golangci-lint &> /dev/null; then \
 		echo "golangci-lint could not be found, installing..."; \
 		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.5.0; \
