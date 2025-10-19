@@ -15,6 +15,7 @@
     - '**/*.snap'
     - '.golangci.yml'
   ignore: 
+    - '.tmp/**/*'
     - '**/*.log'
 
 - name: install after checks
@@ -26,6 +27,7 @@
     - '**/*.go'
     - '**/*.snap'
   ignore: 
+    - '.tmp/**/*'
     - '**/*.log'
 
 - name: git stage changes
@@ -34,4 +36,5 @@
     - '**/*.go'
     - '**/*.snap'
   ignore: 
+    - '.tmp/**/*'
     - '**/*.log'
