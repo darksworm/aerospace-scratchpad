@@ -100,7 +100,10 @@ Relates to:
 ##### When hiding scratchpad on a 2 monitor setup
 
 There is a on going issue related to 2 monitors (main/second), upon hiding an app from second monitor, assuming the .scratchpad is on the main, some apps when moved take with them the focus, and the 
-`.scratchpad` workspace ended up focused on the other monitor. Similar I'm experimenting with a solution, basically move the window to main monitor before hidding it. Once I feel it's stable I merge it.
+`.scratchpad` workspace ended up focused on the other monitor. Similar I'm experimenting with a solution, basically move the window to main monitor before hidding it
+
+ Relates to:
+  - https://github.com/cristianoliveira/aerospace-scratchpad/pull/96
 
 
 ## Advanced Usage
@@ -143,6 +146,7 @@ If you have Homebrew installed, you can install `aerospace-scratchpad` using the
 ```bash
 brew install cristianoliveira/tap/aerospace-scratchpad
 ```
+See the tap definition for other versions [https://github.com/cristianoliveira/homebrew-tap](https://github.com/cristianoliveira/homebrew-tap)
 
 ### Nix
 
