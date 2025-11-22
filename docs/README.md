@@ -67,6 +67,37 @@ This command will summon the next window from the scratchpad workspace until the
 ```bash
 aerospace-scratchpad next
 ```
+## Command: `hook`
+
+_min version: 0.3.0_
+
+This is a set of subcommands to be used to handle specific events from AeroSpaceWM related to the scratchpad workspace.
+Use this to enhance the UX of the scratchpad and the interaction with the macOS environment.
+
+Usually these commands are used by hooking to AeroSpaceWM events using the `exec-on-*` hooks in your `aerospace.toml` config file.
+
+## Command: `hook pull-window`
+
+This subcommand handles when the scratchpad workspace gets focused, which shouldn't happen. It will move focus back to the last focused workspace and pull the focused window from scratchpad.
+This allows you to use different tools to focus windows in scratchpad, like notifications, external launchers, etc., and behave as "summoning" the window to the current workspace instead of focusing the window in the scratchpad workspace.
+For a deeper walkthrough (architecture, logging, troubleshooting) see [`docs/hook-integration.md`](./hook-integration.md).
+
+### USAGE
+
+`aerospace-scratchpad hook pull-window <previous-workspace> <focused-workspace>`
+
+Add this snippet in your `~/.aerospace.toml` config:
+```toml
+# Ensure when scratchpad windows take focus, they are summoned to the previous workspace instead.
+exec-on-workspace-change = ["/bin/bash", "-c",
+  "aerospace-scratchpad hook pull-window $AEROSPACE_PREV_WORKSPACE $AEROSPACE_FOCUSED_WORKSPACE"
+]
+```
+
+For more details:
+```bash
+aerospace-scratchpad hook pull-window --help
+```
 
 ## Flags
 

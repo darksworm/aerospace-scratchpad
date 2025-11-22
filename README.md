@@ -135,6 +135,20 @@ exec-and-forget aerospace-scratchpad show \
 """
 ```
 
+### Handling external focus tools (notification, launchers, etc)
+
+The `hook pull-window` subcommand handles when the scratchpad workspace gets focused, which shouldn't happen. It will move focus back to the last focused workspace and take the focused window to that workspace too. When a hidden scratchpad window takes focus it will behave as "summoning" the window to the current workspace instead of focusing the window in the scratchpad workspace.
+
+```toml
+# ~/.config/aerospace/config.toml
+# Add this snippet
+
+# Ensure when scratchpad windows take focus, they are moved to the current focused workspace.
+exec-on-workspace-change = ["/bin/bash", "-c",
+  "aerospace-scratchpad hook pull-window $AEROSPACE_PREV_WORKSPACE $AEROSPACE_FOCUSED_WORKSPACE"
+]
+```
+
 ## Installation
 
 **Min AeroSpace version**: 0.15.x
