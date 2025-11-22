@@ -15,15 +15,13 @@ A I3/Sway like scratchpad extension for [AeroSpace WM](https://github.com/nikita
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
-**Beta**: I use this daily, I'll try my best but there might be breaking changes till the 1.0.0 release. 
+**Beta**: I use it daily, I'll try my best but there might be breaking changes till the 1.0.0 release. 
 
 Please report any issues or ideas in the [issues](https://github.com/cristianoliveira/aerospace-scratchpad/issues) section.
 
 ## Demo
 
-
 https://github.com/user-attachments/assets/48642cc7-3a5f-4037-863a-eaa493a7b10c
-
 
 From [I3 User Guide](https://i3wm.org/docs/userguide.html#_scratchpad):
 > 6.21. Scratchpad
@@ -69,42 +67,21 @@ exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-sc
 """
 ```
 
-#### Config for good UX with multi-monitors
+#### For better UX
 
-In order to have a better experience with scratchpads on multi-monitor setups
-it is recommended to assign the `.scratchpad` workspace to your `main` monitor so 
-it won't get focused when hiding/showing scratchpad windows.
+**Minimum version: 0.3.0**
 
-See the [AeroSpace documentation](https://nikitabobko.github.io/AeroSpace/guide#multiple-monitors) for more details
-around the multi-monitor model followed by AeroSpace.
+The scratchpad windows lives on a dedicated workspace (default: `.scratchpad`). When an action targets a hidden scratchpad window directly, AeroSpace WM focuses the scratchpad workspace, in order to handle these cases add the following:
 
 ```toml
 # ~/.config/aerospace/config.toml
 # ...your configuration
-[workspace-to-monitor-force-assignment]
-".scratchpad" = "main"
+exec-on-workspace-change = ["/bin/bash", "-c",
+  "aerospace-scratchpad hook pull-window $AEROSPACE_PREV_WORKSPACE $AEROSPACE_FOCUSED_WORKSPACE"
+]
 ```
 
-#### Known issues 
-
-##### Scratchpad workspace take focus
-
-When using an external launcher or when clicking on a notification if the app related to that notification is in the scratchpad
-it will inevitably takes focus, which is a bit of an UX inconvenience, I'm experimenting with some solutions. Once I feel it is stable enough
-I'll merge it to master
-
-Relates to:
- - https://github.com/cristianoliveira/aerospace-scratchpad/issues/53
- - https://github.com/cristianoliveira/aerospace-scratchpad/pull/67
-
-##### When hiding scratchpad on a 2 monitor setup
-
-There is a on going issue related to 2 monitors (main/second), upon hiding an app from second monitor, assuming the .scratchpad is on the main, some apps when moved take with them the focus, and the 
-`.scratchpad` workspace ended up focused on the other monitor. Similar I'm experimenting with a solution, basically move the window to main monitor before hidding it
-
- Relates to:
-  - https://github.com/cristianoliveira/aerospace-scratchpad/pull/96
-
+For more details check [Hook commands](docs/hook-integration.md)
 
 ## Advanced Usage
 
@@ -133,20 +110,6 @@ exec-and-forget aerospace-scratchpad show \
                "$(aerospace-marks get term -a)" \
                -F window-title="$(aerospace-marks get term -t)"
 """
-```
-
-### Handling external focus tools (notification, launchers, etc)
-
-The `hook pull-window` subcommand handles when the scratchpad workspace gets focused, which shouldn't happen. It will move focus back to the last focused workspace and take the focused window to that workspace too. When a hidden scratchpad window takes focus it will behave as "summoning" the window to the current workspace instead of focusing the window in the scratchpad workspace.
-
-```toml
-# ~/.config/aerospace/config.toml
-# Add this snippet
-
-# Ensure when scratchpad windows take focus, they are moved to the current focused workspace.
-exec-on-workspace-change = ["/bin/bash", "-c",
-  "aerospace-scratchpad hook pull-window $AEROSPACE_PREV_WORKSPACE $AEROSPACE_FOCUSED_WORKSPACE"
-]
 ```
 
 ## Installation
@@ -260,8 +223,6 @@ Alternatively, you can export these environment variables in your shell configur
 ```
 
 Replace the paths and values with your desired settings.
-
-### Known i
 
 ## License
 
