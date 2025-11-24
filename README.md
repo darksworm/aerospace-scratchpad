@@ -69,9 +69,9 @@ exec-and-forget aerospace-scratchpad show alacritty -F window-title='terminal-sc
 
 #### For better UX
 
-**Minimum version: 0.3.0**
+_Minimum version: 0.3.0_
 
-The scratchpad windows lives on a dedicated workspace (default: `.scratchpad`). When an action targets a hidden scratchpad window directly, AeroSpace WM focuses the scratchpad workspace, in order to handle these cases add the following:
+The scratchpad windows lives on a dedicated workspace (default: `.scratchpad`). In order to avoid that workspace taking focus add this to your config:
 
 ```toml
 # ~/.config/aerospace/config.toml
