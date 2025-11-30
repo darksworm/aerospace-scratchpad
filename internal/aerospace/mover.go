@@ -5,43 +5,53 @@ import (
 	"fmt"
 	"os"
 
-	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
+	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/windows"
+	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/workspaces"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/constants"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
 )
 
 type Mover interface {
 	// MoveWindowToScratchpad sends a window to a workspace
-	MoveWindowToScratchpad(window aerospacecli.Window) error
+	MoveWindowToScratchpad(window windows.Window) error
 
 	// MoveWindowToWorkspace sends a window to a workspace and set focus
 	MoveWindowToWorkspace(
-		window aerospacecli.Window,
-		workspace aerospacecli.Workspace,
+		window windows.Window,
+		workspace workspaces.Workspace,
 		shouldSetFocus bool,
 	) error
 }
 
 type MoverAeroSpace struct {
-	aerospace aerospacecli.AeroSpaceClient
+	aerospace AeroSpaceWMClient
 }
 
-func NewAeroSpaceMover(aerospace aerospacecli.AeroSpaceClient) MoverAeroSpace {
+func NewAeroSpaceMover(aerospace AeroSpaceWMClient) MoverAeroSpace {
 	return MoverAeroSpace{
 		aerospace: aerospace,
 	}
 }
 
 func (a *MoverAeroSpace) MoveWindowToScratchpad(
-	window aerospacecli.Window,
+	window windows.Window,
 ) error {
 	logger := logger.GetDefaultLogger()
 	logger.LogDebug("MOVING: MoveWindowToScratchpad", "window", window)
 
-	err := a.aerospace.MoveWindowToWorkspace(
-		window.WindowID,
-		constants.DefaultScratchpadWorkspaceName,
-	)
+	// Use wrapper's MoveWindowToWorkspace if available (for dry-run support)
+	var err error
+	if wrapper, ok := a.aerospace.(*AeroSpaceClient); ok {
+		err = wrapper.MoveWindowToWorkspace(
+			window.WindowID,
+			constants.DefaultScratchpadWorkspaceName,
+		)
+	} else {
+		err = a.aerospace.Workspaces().MoveWindowToWorkspace(
+			window.WindowID,
+			constants.DefaultScratchpadWorkspaceName,
+		)
+	}
 	logger.LogDebug(
 		"MOVING: after MoveWindowToWorkspace",
 		"window", window,
@@ -52,10 +62,12 @@ func (a *MoverAeroSpace) MoveWindowToScratchpad(
 		return err
 	}
 
-	err = a.aerospace.SetLayout(
-		window.WindowID,
-		"floating",
-	)
+	// Use wrapper's SetLayout if available (for dry-run support)
+	if wrapper, ok := a.aerospace.(*AeroSpaceClient); ok {
+		err = wrapper.SetLayout(window.WindowID, "floating")
+	} else {
+		err = a.aerospace.Windows().SetLayout(window.WindowID, "floating")
+	}
 	if err != nil {
 		fmt.Fprintf(
 			os.Stdout,
@@ -70,8 +82,8 @@ func (a *MoverAeroSpace) MoveWindowToScratchpad(
 }
 
 func (a *MoverAeroSpace) MoveWindowToWorkspace(
-	window *aerospacecli.Window,
-	workspace *aerospacecli.Workspace,
+	window *windows.Window,
+	workspace *workspaces.Workspace,
 	shouldSetFocus bool,
 ) error {
 	if window == nil {
@@ -81,20 +93,56 @@ func (a *MoverAeroSpace) MoveWindowToWorkspace(
 		return errors.New("workspace is nil")
 	}
 
-	if err := a.aerospace.MoveWindowToWorkspace(
-		window.WindowID,
-		workspace.Workspace,
-	); err != nil {
-		return fmt.Errorf(
-			"unable to move window '%+v' to workspace '%s': %w",
-			window,
+	// Use wrapper's MoveWindowToWorkspace if available (for dry-run support)
+	if wrapper, ok := a.aerospace.(*AeroSpaceClient); ok {
+		if err := wrapper.MoveWindowToWorkspace(
+			window.WindowID,
 			workspace.Workspace,
-			err,
-		)
+		); err != nil {
+			return fmt.Errorf(
+				"unable to move window '%+v' to workspace '%s': %w",
+				window,
+				workspace.Workspace,
+				err,
+			)
+		}
+	} else {
+		// Fallback to direct service call
+		if err := a.aerospace.Workspaces().MoveWindowToWorkspace(
+			window.WindowID,
+			workspace.Workspace,
+		); err != nil {
+			return fmt.Errorf(
+				"unable to move window '%+v' to workspace '%s': %w",
+				window,
+				workspace.Workspace,
+				err,
+			)
+		}
 	}
 
-	if shouldSetFocus {
-		if err := a.aerospace.SetFocusByWindowID(window.WindowID); err != nil {
+	if !shouldSetFocus {
+		fmt.Fprintf(
+			os.Stdout,
+			"Window '%+v' is moved to workspace '%s'\n",
+			window,
+			workspace.Workspace,
+		)
+		return nil
+	}
+
+	// Use wrapper's SetFocusByWindowID if available (for dry-run support)
+	if wrapper, ok := a.aerospace.(*AeroSpaceClient); ok {
+		if err := wrapper.SetFocusByWindowID(window.WindowID); err != nil {
+			return fmt.Errorf(
+				"unable to set focus to window '%+v': %w",
+				window,
+				err,
+			)
+		}
+	} else {
+		// Fallback to direct service call
+		if err := a.aerospace.Windows().SetFocusByWindowID(window.WindowID); err != nil {
 			return fmt.Errorf(
 				"unable to set focus to window '%+v': %w",
 				window,

@@ -8,7 +8,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/cli"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
@@ -19,7 +18,7 @@ import (
 //
 //nolint:funlen
 func SummonCmd(
-	aerospaceClient aerospacecli.AeroSpaceClient,
+	aerospaceClient *aerospace.AeroSpaceClient,
 ) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "summon <pattern>",
@@ -63,7 +62,7 @@ If no pattern is provided, it summons the first window in the scratchpad.
 			}
 
 			// Filter windows using the shared querier
-			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
+			querier := aerospace.NewAerospaceQuerier(aerospaceClient.GetUnderlyingClient())
 			mover := aerospace.NewAeroSpaceMover(aerospaceClient)
 
 			windows, err := querier.GetFilteredWindows(

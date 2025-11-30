@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
+	windowsipc "github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/windows"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/logger"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
@@ -69,7 +69,7 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 				focusedWorkspace,
 			)
 
-			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
+			querier := aerospace.NewAerospaceQuerier(aerospaceClient.GetUnderlyingClient())
 			mover := aerospace.NewAeroSpaceMover(aerospaceClient)
 
 			windows, err := querier.GetFilteredWindows(
@@ -81,8 +81,8 @@ Similar to I3/Sway WM, it will toggle show/hide the window if called multiple ti
 				return
 			}
 
-			var windowsOutsideView []aerospacecli.Window
-			var windowsInFocusedWorkspace []aerospacecli.Window
+			var windowsOutsideView []windowsipc.Window
+			var windowsInFocusedWorkspace []windowsipc.Window
 			var hasAtLeastOneWindowFocused bool
 			for _, window := range windows {
 				var isWindowInFocusedWorkspace bool

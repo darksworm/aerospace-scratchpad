@@ -6,13 +6,12 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	aerospacecli "github.com/cristianoliveira/aerospace-ipc"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/aerospace"
 	"github.com/cristianoliveira/aerospace-scratchpad/internal/stderr"
 )
 
 // NextCmd represents the next command.
-func NextCmd(aerospaceClient aerospacecli.AeroSpaceClient) *cobra.Command {
+func NextCmd(aerospaceClient *aerospace.AeroSpaceClient) *cobra.Command {
 	nextCmd := &cobra.Command{
 		Use:   "next",
 		Short: "Shows the next scratchpad window",
@@ -31,7 +30,7 @@ It does not send the windows back to the scratchpad, but rather focuses the next
 				return
 			}
 
-			querier := aerospace.NewAerospaceQuerier(aerospaceClient)
+			querier := aerospace.NewAerospaceQuerier(aerospaceClient.GetUnderlyingClient())
 			mover := aerospace.NewAeroSpaceMover(aerospaceClient)
 
 			window, err := querier.GetNextScratchpadWindow()
