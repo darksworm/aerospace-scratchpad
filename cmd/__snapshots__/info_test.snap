@@ -1,0 +1,63 @@
+
+[TestInfoCmd/reports_compatibility_information - 1]
+aerospace-scratchpad info
+
+Output
+Aerospace Scratchpad
+
+[Aerospace]
+Version: 0.4.0
+Socket: /tmp/aerospace.sock
+
+[Aerospace scratchpad]
+Workspace: .scratchpad
+
+[Compatibility]
+Status: Compatible.
+            
+
+Error
+<nil>
+---
+
+[TestInfoCmd/reports_incompatibility_when_version_check_fails - 1]
+aerospace-scratchpad info
+
+Output
+Aerospace Scratchpad
+
+[Aerospace]
+Version: 0.4.0
+Socket: /tmp/aerospace.sock
+
+[Aerospace scratchpad]
+Workspace: .scratchpad
+
+[Compatibility]
+Status: Incompatible. Reason: mocked incompatibility
+            
+
+Error
+<nil>
+---
+
+[TestInfoCmd/still_prints_when_compatibility_fails_but_other_calls_error - 1]
+aerospace-scratchpad info
+
+Output
+Aerospace Scratchpad
+
+[Aerospace]
+Version: 
+Socket: 
+
+[Aerospace scratchpad]
+Workspace: .scratchpad
+
+[Compatibility]
+Status: Incompatible. Reason: mocked incompatibility
+            
+
+Error
+<nil>
+---

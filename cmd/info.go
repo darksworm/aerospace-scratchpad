@@ -26,19 +26,20 @@ As well as other relevant information.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			socketClient := aerospace.Connection()
-			socketPath, err := socketClient.GetSocketPath()
-			if err != nil {
-				return fmt.Errorf("failed to get socket path: %w", err)
-			}
-
 			var validationInfo string
-			if err = socketClient.CheckServerVersion(); err != nil {
+			if err := socketClient.CheckServerVersion(); err != nil {
 				validationInfo = "Incompatible. Reason: " + err.Error()
 			} else {
 				validationInfo = "Compatible."
 			}
+
+			socketPath, err := socketClient.GetSocketPath()
+			if err != nil && validationInfo == "" {
+				return fmt.Errorf("failed to get socket path: %w", err)
+			}
+
 			serverVersion, err := socketClient.GetServerVersion()
-			if err != nil {
+			if err != nil && validationInfo == "" {
 				return fmt.Errorf("failed to get server version: %w", err)
 			}
 
