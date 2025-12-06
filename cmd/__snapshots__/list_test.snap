@@ -21,8 +21,8 @@
 aerospace-scratchpad list
 
 Output
-command=list action=list window_id=9999 app_name="Scratchpad Window" workspace=.scratchpad target_workspace="" result=ok message=""
 command=list action=list window_id=8888 app_name="Another Scratchpad Window" workspace=.scratchpad target_workspace="" result=ok message=""
+command=list action=list window_id=9999 app_name="Scratchpad Window" workspace=.scratchpad target_workspace="" result=ok message=""
 
 Error
 <nil>

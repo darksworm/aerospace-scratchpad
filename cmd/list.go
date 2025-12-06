@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"os"
+	"sort"
 
 	"github.com/spf13/cobra"
 
@@ -64,6 +65,7 @@ func runListCommand(cmd *cobra.Command, args []string, aerospaceClient *aerospac
 	logger.LogDebug("LIST: retrieved scratchpad windows", "count", len(scratchpadWindows))
 
 	filteredWindows := applyFiltersToList(scratchpadWindows, filterFlags)
+	sortWindowsByAppName(filteredWindows)
 	outputWindows(formatter, filteredWindows)
 }
 
@@ -113,6 +115,17 @@ func applyFiltersToList(
 	}
 
 	return filteredWindows
+}
+
+func sortWindowsByAppName(windows []windowsipc.Window) {
+	sort.Slice(windows, func(i, j int) bool {
+		// Sort by app name first
+		if windows[i].AppName != windows[j].AppName {
+			return windows[i].AppName < windows[j].AppName
+		}
+		// If app names are equal, sort by window ID for stable ordering
+		return windows[i].WindowID < windows[j].WindowID
+	})
 }
 
 func outputWindows(formatter *cli.OutputFormatter, windows []windowsipc.Window) {
