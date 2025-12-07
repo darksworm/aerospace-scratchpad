@@ -3,11 +3,9 @@ package cmd_test
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/focus"
@@ -17,6 +15,7 @@ import (
 	"github.com/cristianoliveira/aerospace-ipc/pkg/client"
 	"github.com/cristianoliveira/aerospace-scratchpad/cmd"
 	client_mock "github.com/cristianoliveira/aerospace-scratchpad/internal/mocks/client"
+	"github.com/cristianoliveira/aerospace-scratchpad/internal/testutils"
 )
 
 type infoAeroSpaceClient struct {
@@ -74,9 +73,8 @@ func TestInfoCmd(t *testing.T) {
 			t.Fatalf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", output.String(), expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, output.String(), err)
 	})
 
 	t.Run("reports incompatibility when version check fails", func(t *testing.T) {
@@ -109,9 +107,8 @@ func TestInfoCmd(t *testing.T) {
 			t.Fatalf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", output.String(), expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, output.String(), err)
 	})
 
 	t.Run("still prints when compatibility fails but other calls error", func(t *testing.T) {
@@ -144,8 +141,7 @@ func TestInfoCmd(t *testing.T) {
 			t.Fatalf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", output.String(), expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, output.String(), err)
 	})
 }

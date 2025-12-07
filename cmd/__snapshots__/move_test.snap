@@ -1,273 +1,291 @@
 
 [TestMoveCmd/fails_when_pattern_doesnt_match_any_window - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move foo
-
-Output
-
-Error
- Error: no windows matched the pattern 'foo'
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move foo
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: no windows matched the pattern 'foo'
 
 ---
 
 [TestMoveCmd/moves_current_focused_window_to_scratchpad_when_empty - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move 
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/fails_when_getting_all_windows_return_an_erro - 1]
-aerospace-scratchpad move test
-
-Output
-
-Error
- Error: unable to get windows: mocked_error
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad move test
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: unable to get windows: mocked_error
 
 ---
 
 [TestMoveCmd/moves_a_window_to_scratchpad_by_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move Notepad
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move Notepad
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=1234 app_name=Notepad workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=1234 app_name=Notepad workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/fails_when_moving_a_window_to_scratchpad - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move Finder
-
-Output
-
-Error
-Error: Window '5678 | Finder ' already belongs to scratchpad
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move Finder
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: Window '5678 | Finder ' already belongs to scratchpad
 
 ---
 
 [TestMoveCmd/[dry-run]_move_a_window_to_scratchpad_by_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move Notepad --dry-run
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move Notepad --dry-run
+Output:
+  status: success
+  stdout: |
+    [dry-run] FocusNextTilingWindow()
+    [dry-run] MoveWindowToWorkspace(windowID=1234, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=1234, layout=floating)
+    command=move action=to-scratchpad window_id=1234 app_name=Notepad workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-[dry-run] FocusNextTilingWindow()
-[dry-run] MoveWindowToWorkspace(windowID=1234, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=1234, layout=floating)
-command=move action=to-scratchpad window_id=1234 app_name=Notepad workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/moves_only_the_focused_window_when_multiple_matches_exist - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1111, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move 
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1111
+    app-name: Finder
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/[dry-run]_moves_all_windows_with_the_same_app_name_as_the_focused_window_when_--all-matching_is_used - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1111, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move  --all-matching --dry-run
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1111
+    app-name: Finder
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move  --all-matching --dry-run
+Output:
+  status: success
+  stdout: |
+    [dry-run] FocusNextTilingWindow()
+    [dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=1111, layout=floating)
+    command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+    [dry-run] MoveWindowToWorkspace(windowID=5678, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=5678, layout=floating)
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-[dry-run] FocusNextTilingWindow()
-[dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=1111, layout=floating)
-command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-[dry-run] MoveWindowToWorkspace(windowID=5678, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=5678, layout=floating)
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/moves_all_windows_with_the_same_app_name_as_the_focused_window_when_--all-matching_is_used - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1111, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move  --all-matching
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1111
+    app-name: Finder
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move  --all-matching
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/moves_all_floating_windows_when_--all-floating_is_used - 1]
-[]windows.Window{
-    {WindowID:1111, WindowTitle:"", WindowLayout:"floating", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:""},
-    {WindowID:2222, WindowTitle:"", WindowLayout:"floating", WindowParentContainerLayout:"", AppName:"Calculator", AppBundleID:"", Workspace:""},
-    {WindowID:1234, WindowTitle:"", WindowLayout:"tiling", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-}
-aerospace-scratchpad move --all-floating
+Context:
+  windows:
+  - window-id: 1111
+    window-layout: floating
+    app-name: Terminal
+  - window-id: 2222
+    window-layout: floating
+    app-name: Calculator
+  - window-id: 1234
+    window-layout: tiling
+    app-name: Notepad
+Command: |
+  $ aerospace-scratchpad move --all-floating
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=1111 app_name=Terminal workspace="" target_workspace=.scratchpad result=ok message=""
+    command=move action=to-scratchpad window_id=2222 app_name=Calculator workspace="" target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=1111 app_name=Terminal workspace="" target_workspace=.scratchpad result=ok message=""
-command=move action=to-scratchpad window_id=2222 app_name=Calculator workspace="" target_workspace=.scratchpad result=ok message=""
-
-Error
-nil
 ---
 
 [TestMoveCmd/handles_no_floating_windows_gracefully_with_--all-floating - 1]
-[]windows.Window{
-    {WindowID:1234, WindowTitle:"", WindowLayout:"tiling", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-    {WindowID:5678, WindowTitle:"", WindowLayout:"tiling", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-}
-aerospace-scratchpad move --all-floating
+Context:
+  windows:
+  - window-id: 1234
+    window-layout: tiling
+    app-name: Notepad
+  - window-id: 5678
+    window-layout: tiling
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move --all-floating
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=0 app_name="" workspace="" target_workspace="" result=none message="no floating windows found"
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=0 app_name="" workspace="" target_workspace="" result=none message="no floating windows found"
-
-Error
-nil
 ---
 
 [TestMoveCmd/[dry-run]_moves_all_floating_windows_when_--all-floating_is_used - 1]
-[]windows.Window{
-    {WindowID:1111, WindowTitle:"", WindowLayout:"floating", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:""},
-}
-aerospace-scratchpad move --all-floating --dry-run
+Context:
+  windows:
+  - window-id: 1111
+    window-layout: floating
+    app-name: Terminal
+Command: |
+  $ aerospace-scratchpad move --all-floating --dry-run
+Output:
+  status: success
+  stdout: |
+    [dry-run] FocusNextTilingWindow()
+    [dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=1111, layout=floating)
+    command=move action=to-scratchpad window_id=1111 app_name=Terminal workspace="" target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-[dry-run] FocusNextTilingWindow()
-[dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=1111, layout=floating)
-command=move action=to-scratchpad window_id=1111 app_name=Terminal workspace="" target_workspace=.scratchpad result=ok message=""
-
-Error
-nil
 ---
 
 [TestMoveCmd/moves_all_windows_with_the_same_app_name_as_the_focused_window_when_--all-matching_is_used - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1111, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move  --all-matching
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1111
+    app-name: Finder
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move  --all-matching
+Output:
+  status: success
+  stdout: |
+    command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestMoveCmd/[dry-run]_moves_all_windows_with_the_same_app_name_as_the_focused_window_when_--all-matching_is_used - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1111, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad move  --all-matching --dry-run
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1111
+    app-name: Finder
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad move  --all-matching --dry-run
+Output:
+  status: success
+  stdout: |
+    [dry-run] FocusNextTilingWindow()
+    [dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=1111, layout=floating)
+    command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+    [dry-run] MoveWindowToWorkspace(windowID=5678, workspace=.scratchpad)
+    [dry-run] SetLayout(windowID=5678, layout=floating)
+    command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-[dry-run] FocusNextTilingWindow()
-[dry-run] MoveWindowToWorkspace(windowID=1111, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=1111, layout=floating)
-command=move action=to-scratchpad window_id=1111 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-[dry-run] MoveWindowToWorkspace(windowID=5678, workspace=.scratchpad)
-[dry-run] SetLayout(windowID=5678, layout=floating)
-command=move action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
- <nil>
 ---

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/layout"
@@ -79,9 +78,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("moves current focused window to scratchpad when empty", func(t *testing.T) {
@@ -158,19 +156,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(
-			args,
-			" ",
-		) + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(
-			t,
-			tree,
-			cmdAsString,
-			"Output",
-			out,
-			errorMessage,
-		)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("moves only the focused window when multiple matches exist", func(t *testing.T) {
@@ -241,19 +228,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(
-			args,
-			" ",
-		) + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(
-			t,
-			tree,
-			cmdAsString,
-			"Output",
-			out,
-			errorMessage,
-		)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("fails when getting all windows return an erro", func(t *testing.T) {
@@ -288,9 +264,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected empty output, got %s", out)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 	})
 
 	t.Run("moves a window to scratchpad by pattern", func(t *testing.T) {
@@ -366,9 +341,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("fails when moving a window to scratchpad", func(t *testing.T) {
@@ -440,9 +414,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("[dry-run] move a window to scratchpad by pattern", func(t *testing.T) {
@@ -520,19 +493,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(
-			args,
-			" ",
-		) + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(
-			t,
-			tree,
-			cmdAsString,
-			"Output",
-			out,
-			errorMessage,
-		)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run(
@@ -624,19 +586,8 @@ func TestMoveCmd(t *testing.T) {
 				t.Errorf("Expected no error, got %v", err)
 			}
 
-			cmdAsString := "aerospace-scratchpad " + strings.Join(
-				args,
-				" ",
-			) + "\n"
-			errorMessage := fmt.Sprintf("Error\n %+v", err)
-			snaps.MatchSnapshot(
-				t,
-				tree,
-				cmdAsString,
-				"Output",
-				out,
-				errorMessage,
-			)
+			cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+			testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 		},
 	)
 
@@ -738,8 +689,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		snaps.MatchSnapshot(t, allWindows, cmdAsString, "Output", out, "Error", err)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, allWindows, cmdAsString, out, err)
 	})
 
 	t.Run("handles no floating windows gracefully with --all-floating", func(t *testing.T) {
@@ -778,8 +729,8 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		snaps.MatchSnapshot(t, allWindows, cmdAsString, "Output", out, "Error", err)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, allWindows, cmdAsString, out, err)
 	})
 
 	t.Run(
@@ -841,19 +792,8 @@ func TestMoveCmd(t *testing.T) {
 				t.Errorf("Expected no error, got %v", err)
 			}
 
-			cmdAsString := "aerospace-scratchpad " + strings.Join(
-				args,
-				" ",
-			) + "\n"
-			errorMessage := fmt.Sprintf("Error\n %+v", err)
-			snaps.MatchSnapshot(
-				t,
-				tree,
-				cmdAsString,
-				"Output",
-				out,
-				errorMessage,
-			)
+			cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+			testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 		},
 	)
 
@@ -888,7 +828,7 @@ func TestMoveCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		snaps.MatchSnapshot(t, allWindows, cmdAsString, "Output", out, "Error", err)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, allWindows, cmdAsString, out, err)
 	})
 }

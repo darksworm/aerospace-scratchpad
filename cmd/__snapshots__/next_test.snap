@@ -1,28 +1,25 @@
 
 [TestNextCmd/summon_next_window_from_scratchpad - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-    {
-        Windows: {
-            {WindowID:9999, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Scratchpad Window", AppBundleID:"", Workspace:""},
-            {WindowID:8888, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Another Scratchpad Window", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:".scratchpad"},
-        FocusedWindowID: 0,
-    },
-}
-aerospace-scratchpad next
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  - workspace: .scratchpad
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+  - window-id: 9999
+    app-name: Scratchpad Window
+  - window-id: 8888
+    app-name: Another Scratchpad Window
+Command: |
+  $ aerospace-scratchpad next
+Output:
+  status: success
+  stdout: |
+    command=next action=to-workspace window_id=9999 app_name="Scratchpad Window" workspace="" target_workspace=ws1 result=ok message=""
+  error: ""
 
-Output
-command=next action=to-workspace window_id=9999 app_name="Scratchpad Window" workspace="" target_workspace=ws1 result=ok message=""
-
-Error
-<nil>
 ---

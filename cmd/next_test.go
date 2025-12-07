@@ -1,11 +1,9 @@
 package cmd_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/windows"
@@ -104,8 +102,7 @@ func TestNextCmd(t *testing.T) {
 			t.Errorf("Expected output, got empty string")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 }

@@ -2,11 +2,9 @@ package cmd_test
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/windows"
@@ -95,9 +93,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("fails when pattern doesn't match any window", func(t *testing.T) {
@@ -149,9 +146,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected error, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run(
@@ -187,12 +183,8 @@ func TestSummonCmd(t *testing.T) {
 				t.Errorf("Expected empty output, got %s", out)
 			}
 
-			cmdAsString := "aerospace-scratchpad " + strings.Join(
-				args,
-				" ",
-			) + "\n"
-			errorMessage := fmt.Sprintf("Error\n %+v", err)
-			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+			cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+			testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 		},
 	)
 
@@ -242,12 +234,8 @@ func TestSummonCmd(t *testing.T) {
 				t.Errorf("Expected empty output, got %s", out)
 			}
 
-			cmdAsString := "aerospace-scratchpad " + strings.Join(
-				args,
-				" ",
-			) + "\n"
-			errorMessage := fmt.Sprintf("Error\n %+v", err)
-			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+			cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+			testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 		},
 	)
 
@@ -277,9 +265,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected empty output, got %s", out)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 	})
 
 	t.Run(
@@ -350,12 +337,8 @@ func TestSummonCmd(t *testing.T) {
 				t.Errorf("Expected empty output, got %s", out)
 			}
 
-			cmdAsString := "aerospace-scratchpad " + strings.Join(
-				args,
-				" ",
-			) + "\n"
-			errorMessage := fmt.Sprintf("Error\n %+v", err)
-			snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+			cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+			testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 		},
 	)
 
@@ -430,9 +413,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected empty output, got %s", out)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 	})
 
 	t.Run("summons multiple windows matching the pattern", func(t *testing.T) {
@@ -533,8 +515,7 @@ func TestSummonCmd(t *testing.T) {
 		}
 
 		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("handles empty pattern gracefully", func(t *testing.T) {
@@ -554,9 +535,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected error for empty pattern, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 	})
 
 	t.Run("handles whitespace-only pattern gracefully", func(t *testing.T) {
@@ -576,9 +556,8 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected error for whitespace-only pattern, got nil")
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, nil, cmdAsString, out, err)
 	})
 
 	t.Run("[dry-run] summons a window by pattern", func(t *testing.T) {
@@ -642,8 +621,7 @@ func TestSummonCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		errorMessage := fmt.Sprintf("Error\n %+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, errorMessage)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 }

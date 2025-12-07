@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/layout"
@@ -63,7 +62,7 @@ func TestShowCmd(t *testing.T) {
 
 		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
 		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		testutils.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
 	})
 
 	t.Run("fails when pattern doesn match any window", func(t *testing.T) {
@@ -117,7 +116,7 @@ func TestShowCmd(t *testing.T) {
 
 		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
 		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		testutils.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
 	})
 
 	t.Run(
@@ -199,7 +198,7 @@ func TestShowCmd(t *testing.T) {
 				" ",
 			) + "\n"
 			expectedError := fmt.Sprintf("Error\n%+v", err)
-			snaps.MatchSnapshot(
+			testutils.MatchSnapshot(
 				t,
 				tree,
 				cmdAsString,
@@ -303,7 +302,7 @@ func TestShowCmd(t *testing.T) {
 
 		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
 		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		testutils.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
 	})
 
 	t.Run(
@@ -408,7 +407,7 @@ func TestShowCmd(t *testing.T) {
 				" ",
 			) + "\n"
 			expectedError := fmt.Sprintf("Error\n%+v", err)
-			snaps.MatchSnapshot(
+			testutils.MatchSnapshot(
 				t,
 				tree,
 				cmdAsString,
@@ -530,7 +529,7 @@ func TestShowCmd(t *testing.T) {
 				" ",
 			) + "\n"
 			expectedError := fmt.Sprintf("Error\n%+v", err)
-			snaps.MatchSnapshot(
+			testutils.MatchSnapshot(
 				t,
 				tree,
 				cmdAsString,
@@ -666,7 +665,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					t,
 					tree,
 					cmdAsString,
@@ -786,7 +785,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					t,
 					tree,
 					cmdAsString,
@@ -901,7 +900,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					t,
 					tree,
 					cmdAsString,
@@ -1012,7 +1011,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					ttt,
 					tree,
 					cmdAsString,
@@ -1132,7 +1131,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					ttt,
 					tree,
 					cmdAsString,
@@ -1200,7 +1199,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					ttt,
 					tree,
 					cmdAsString,
@@ -1292,7 +1291,7 @@ func TestShowCmd(t *testing.T) {
 					" ",
 				) + "\n"
 				expectedError := fmt.Sprintf("Error\n%+v", err)
-				snaps.MatchSnapshot(
+				testutils.MatchSnapshot(
 					ttt,
 					tree,
 					cmdAsString,

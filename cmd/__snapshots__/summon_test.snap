@@ -1,152 +1,176 @@
 
 [TestSummonCmd/successfully_summons_a_window_by_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad summon Notepad
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad summon Notepad
+Output:
+  status: success
+  stdout: |
+    command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
+  error: ""
 
-Output
-command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestSummonCmd/fails_when_pattern_doesn't_match_any_window - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad summon NonExistentApp
-
-Output
-
-Error
- Error: no windows matched the pattern 'NonExistentApp'
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad summon NonExistentApp
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: no windows matched the pattern 'NonExistentApp'
 
 ---
 
 [TestSummonCmd/fails_when_getting_all_windows_returns_an_error - 1]
-aerospace-scratchpad summon test
-
-Output
-
-Error
- Error: unable to get windows: mocked_error
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon test
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: unable to get windows: mocked_error
 
 ---
 
 [TestSummonCmd/fails_when_getting_focused_workspace_returns_an_error - 1]
-aerospace-scratchpad summon Notepad
-
-Output
-
-Error
- Error: unable to get focused workspace
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon Notepad
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: unable to get focused workspace
 
 ---
 
 [TestSummonCmd/fails_when_regex_pattern_is_invalid - 1]
-aerospace-scratchpad summon [invalid
-
-Output
-
-Error
- Error: invalid app-name-pattern, error parsing regexp: missing closing ]: `[invalid`
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon [invalid
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: invalid app-name-pattern, error parsing regexp: missing closing ]: `[invalid`
 
 ---
 
 [TestSummonCmd/fails_when_moving_window_to_workspace_returns_an_error - 1]
-aerospace-scratchpad summon Notepad
-
-Output
-
-Error
- Error: unable to move window '1234 | Notepad  | ws1' to workspace 'ws1': mocked_move_error
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon Notepad
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: unable to move window '1234 | Notepad  | ws1' to workspace 'ws1': mocked_move_error
 
 ---
 
 [TestSummonCmd/fails_when_setting_focus_returns_an_error - 1]
-aerospace-scratchpad summon Notepad
-
-Output
-
-Error
- Error: unable to set focus to window '1234 | Notepad  | ws1': mocked_focus_error
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon Notepad
+Output:
+  status: error
+  stdout: ""
+  error: |
+    Error: unable to set focus to window '1234 | Notepad  | ws1': mocked_focus_error
 
 ---
 
 [TestSummonCmd/summons_multiple_windows_matching_the_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"TextEdit", AppBundleID:"", Workspace:""},
-            {WindowID:9012, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 9012,
-    },
-}
-aerospace-scratchpad summon .*(Notepad|TextEdit).*
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 9012
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: TextEdit
+  - window-id: 9012
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad summon .*(Notepad|TextEdit).*
+Output:
+  status: success
+  stdout: |
+    command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
+    command=summon action=to-workspace window_id=5678 app_name=TextEdit workspace=ws1 target_workspace=ws1 result=ok message=""
+  error: ""
 
-Output
-command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
-command=summon action=to-workspace window_id=5678 app_name=TextEdit workspace=ws1 target_workspace=ws1 result=ok message=""
-
-Error
- <nil>
 ---
 
 [TestSummonCmd/handles_empty_pattern_gracefully - 1]
-aerospace-scratchpad summon 
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon
+Output:
+  status: error
+  stdout: ""
+  error: |
+    argument at position 0 is empty or whitespace
 
-Output
-
-Error
- argument at position 0 is empty or whitespace
 ---
 
 [TestSummonCmd/handles_whitespace-only_pattern_gracefully - 1]
-aerospace-scratchpad summon    
+Context:
+  {}
+Command: |
+  $ aerospace-scratchpad summon
+Output:
+  status: error
+  stdout: ""
+  error: |
+    argument at position 0 is empty or whitespace
 
-Output
-
-Error
- argument at position 0 is empty or whitespace
 ---
 
 [TestSummonCmd/[dry-run]_summons_a_window_by_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad summon Notepad --dry-run
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad summon Notepad --dry-run
+Output:
+  status: success
+  stdout: |
+    [dry-run] MoveWindowToWorkspace(windowID=1234, workspace=ws1)
+    [dry-run] SetFocusByWindowID(1234)
+    command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
+  error: ""
 
-Output
-[dry-run] MoveWindowToWorkspace(windowID=1234, workspace=ws1)
-[dry-run] SetFocusByWindowID(1234)
-command=summon action=to-workspace window_id=1234 app_name=Notepad workspace=ws1 target_workspace=ws1 result=ok message=""
-
-Error
- <nil>
 ---

@@ -1,11 +1,9 @@
 package cmd_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/gkampitakis/go-snaps/snaps"
 	"go.uber.org/mock/gomock"
 
 	"github.com/cristianoliveira/aerospace-ipc/pkg/aerospace/windows"
@@ -95,9 +93,8 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("lists floating windows as scratchpad windows", func(t *testing.T) {
@@ -152,9 +149,8 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("lists scratchpad windows with filters", func(t *testing.T) {
@@ -210,9 +206,8 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("lists scratchpad windows in json format", func(t *testing.T) {
@@ -262,9 +257,8 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("returns empty result when no scratchpad windows", func(t *testing.T) {
@@ -313,9 +307,8 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 
 	t.Run("works with ls alias", func(t *testing.T) {
@@ -365,8 +358,7 @@ func TestListCmd(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
-		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ") + "\n"
-		expectedError := fmt.Sprintf("Error\n%+v", err)
-		snaps.MatchSnapshot(t, tree, cmdAsString, "Output", out, expectedError)
+		cmdAsString := "aerospace-scratchpad " + strings.Join(args, " ")
+		testutils.MatchSnapshot(t, tree, cmdAsString, out, err)
 	})
 }

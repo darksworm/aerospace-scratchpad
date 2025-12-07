@@ -1,250 +1,248 @@
 
 [TestShowCmd/fails_when_pattern_is_empty - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad show 
-
-Output
-
-Error
-Error: <pattern> cannot be empty
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad show
+Output:
+  status: success
+  stdout: |
+    Error
+    Error: <pattern> cannot be empty
+  error: ""
 
 ---
 
 [TestShowCmd/fails_when_pattern_doesn_match_any_window - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 1234,
-    },
-}
-aerospace-scratchpad show foo
-
-Output
-
-Error
-Error: no windows matched the pattern 'foo'
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 1234
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad show foo
+Output:
+  status: success
+  stdout: |
+    Error
+    Error: no windows matched the pattern 'foo'
+  error: ""
 
 ---
 
 [TestShowCmd/set_focus_to_window_if_already_in_the_focused_workspace_but_not_focused - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 1234,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 1234
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=focus window_id=5678 app_name=Finder workspace=ws1 target_workspace="" result=ok message=""
+  error: ""
 
-Output
-command=show action=focus window_id=5678 app_name=Finder workspace=ws1 target_workspace="" result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/moves_a_window_to_scratchpad_by_pattern - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+    focused-window-id: 5678
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=show action=to-scratchpad window_id=5678 app_name=Finder workspace=ws1 target_workspace=.scratchpad result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/summon_the_window_to_the_current_workspace_if_in_another_workspace - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:1234, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Notepad", AppBundleID:"", Workspace:""},
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:""},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 1234
+    app-name: Notepad
+  - window-id: 5678
+    app-name: Finder
+  - window-id: 91011
+    app-name: Terminal
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder workspace=ws1 target_workspace=ws2 result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder workspace=ws1 target_workspace=ws2 result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/brings_all_windows_to_focused_workspace - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 5678
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 5679
+    app-name: Finder2
+    workspace: ws1
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
+    command=show action=to-workspace window_id=5679 app_name=Finder2 workspace=ws1 target_workspace=ws2 result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
-command=show action=to-workspace window_id=5679 app_name=Finder2 workspace=ws1 target_workspace=ws2 result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/sends_all_windows_to_scratchpad_if_at_least_one_window_is_focused - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws2"},
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"", Workspace:"ws2"},
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 5678,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+  - workspace: ws2
+    focused-window-id: 5678
+  windows:
+  - window-id: 5678
+    app-name: Finder1
+    workspace: ws2
+  - window-id: 5679
+    app-name: Finder2
+    workspace: ws2
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-scratchpad window_id=5678 app_name=Finder1 workspace=ws2 target_workspace=.scratchpad result=ok message=""
+    command=show action=to-scratchpad window_id=5679 app_name=Finder2 workspace=ws2 target_workspace=.scratchpad result=ok message=""
+  error: ""
 
-Output
-command=show action=to-scratchpad window_id=5678 app_name=Finder1 workspace=ws2 target_workspace=.scratchpad result=ok message=""
-command=show action=to-scratchpad window_id=5679 app_name=Finder2 workspace=ws2 target_workspace=.scratchpad result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/gives_priority_to_bringing_scratchpads_together - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:22, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Browser", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"", Workspace:"ws2"},
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 5678
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 22
+    app-name: Browser
+    workspace: ws1
+  - window-id: 5679
+    app-name: Finder2
+    workspace: ws2
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
+    command=show action=focus window_id=5679 app_name=Finder2 workspace=ws2 target_workspace="" result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
-command=show action=focus window_id=5679 app_name=Finder2 workspace=ws2 target_workspace="" result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/when_bringing_windows_together,_it_doesnt_change_focus - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:22, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Browser", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws1"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"", Workspace:"ws2"},
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 5679,
-    },
-}
-aerospace-scratchpad show Finder
+Context:
+  workspaces:
+  - workspace: ws1
+  - workspace: ws2
+    focused-window-id: 5679
+  windows:
+  - window-id: 5678
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 22
+    app-name: Browser
+    workspace: ws1
+  - window-id: 5679
+    app-name: Finder2
+    workspace: ws2
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
+    command=show action=focus window_id=5679 app_name=Finder2 workspace=ws2 target_workspace="" result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
-command=show action=focus window_id=5679 app_name=Finder2 workspace=ws2 target_workspace="" result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/Filter_flag:_brings_any_windows_that_matches_filter - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"Finder - foo and zas", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2 - bar and baz", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:".scratchpad"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder --filter window-title=foo
+Context:
+  workspaces:
+  - workspace: .scratchpad
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 5678
+    window-title: Finder - foo and zas
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 5679
+    app-name: Finder2 - bar and baz
+    workspace: ws1
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder --filter window-title=foo
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd - 1]
@@ -304,76 +302,87 @@ Error
 ---
 
 [TestShowCmd/MultipleWindows/Filter_flag:_brings_any_windows_that_matches_filter_-_allow_multiple - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"Finder - foo and zas", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"com.linux.finder", Workspace:"ws1"},
-            {WindowID:5679, WindowTitle:"Finder2 - foo and baz", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"com.apple.finder", Workspace:"ws1"},
-            {WindowID:5680, WindowTitle:"Finder2 - bar and baz", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"com.apple.finder", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:".scratchpad"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder -F window-title=foo -F app-bundle-id=linux
+Context:
+  workspaces:
+  - workspace: .scratchpad
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 5678
+    window-title: Finder - foo and zas
+    app-name: Finder1
+    app-bundle-id: com.linux.finder
+    workspace: ws1
+  - window-id: 5679
+    window-title: Finder2 - foo and baz
+    app-name: Finder2
+    app-bundle-id: com.apple.finder
+    workspace: ws1
+  - window-id: 5680
+    window-title: Finder2 - bar and baz
+    app-name: Finder2
+    app-bundle-id: com.apple.finder
+    workspace: ws1
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder -F window-title=foo -F app-bundle-id=linux
+Output:
+  status: success
+  stdout: |
+    command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
+  error: ""
 
-Output
-command=show action=to-workspace window_id=5678 app_name=Finder1 workspace=ws1 target_workspace=ws2 result=ok message=""
-
-Error
-<nil>
 ---
 
 [TestShowCmd/MultipleWindows/Filter_flag:_fails_when_unknown_filter_property_is_used - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:5670, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:".scratchpad"},
-        FocusedWindowID: 5670,
-    },
-}
-aerospace-scratchpad show Finder --filter unknown=foo
-
-Output
-
-Error
-Error: error applying filters to window 'Finder1': unknown filter property: unknown
+Context:
+  workspaces:
+  - workspace: .scratchpad
+    focused-window-id: 5670
+  windows:
+  - window-id: 5678
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 5670
+    app-name: Finder2
+    workspace: ws1
+Command: |
+  $ aerospace-scratchpad show Finder --filter unknown=foo
+Output:
+  status: success
+  stdout: |
+    Error
+    Error: error applying filters to window 'Finder1': unknown filter property: unknown
+  error: ""
 
 ---
 
 [TestShowCmd/MultipleWindows/Filter_flag:_shows_error_messages_when_no_match - 1]
-[]testutils.AeroSpaceTree{
-    {
-        Windows: {
-            {WindowID:5678, WindowTitle:"Finder - foo and zas", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder1", AppBundleID:"", Workspace:"ws1"},
-            {WindowID:5679, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Finder2 - bar and baz", AppBundleID:"", Workspace:"ws1"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:".scratchpad"},
-        FocusedWindowID: 0,
-    },
-    {
-        Windows: {
-            {WindowID:91011, WindowTitle:"", WindowLayout:"", WindowParentContainerLayout:"", AppName:"Terminal", AppBundleID:"", Workspace:"ws2"},
-        },
-        Workspace:       &workspaces.Workspace{Workspace:"ws2"},
-        FocusedWindowID: 91011,
-    },
-}
-aerospace-scratchpad show Finder --filter window-title=cantfindme
-
-Output
-
-Error
-Error: no windows matched the pattern 'Finder' with the given filters
+Context:
+  workspaces:
+  - workspace: .scratchpad
+  - workspace: ws2
+    focused-window-id: 91011
+  windows:
+  - window-id: 5678
+    window-title: Finder - foo and zas
+    app-name: Finder1
+    workspace: ws1
+  - window-id: 5679
+    app-name: Finder2 - bar and baz
+    workspace: ws1
+  - window-id: 91011
+    app-name: Terminal
+    workspace: ws2
+Command: |
+  $ aerospace-scratchpad show Finder --filter window-title=cantfindme
+Output:
+  status: success
+  stdout: |
+    Error
+    Error: no windows matched the pattern 'Finder' with the given filters
+  error: ""
 
 ---
